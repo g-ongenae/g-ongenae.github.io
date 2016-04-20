@@ -1,0 +1,104 @@
+body {
+  height: 100%;
+  font: 'Raleway', sans-serif;
+}
+
+header h1 {
+  font-size: 4em;
+  font: 'Josefin Sans', sans-serif;
+}
+
+.container-fluid h2 {
+  font: 'Josefin Sans', sans-serif;
+}
+
+h3, .centered, footer {
+  text-align: center;
+  font: 'Josefin Sans', sans-serif;
+}
+
+ul {
+  list-style: none;
+}
+
+.color-grey {
+  color: grey;
+}
+
+.img-span6 {
+  width: 250px;
+  font-size: 6em;
+}
+
+.img-span4 {
+  width: 70px;
+  font-size: 4em;
+}
+
+.img-span2 {
+  width: 50px;
+  font-size: 2em;
+}
+
+.img-span1 {
+  width: 25px;
+  font-size: 1em;
+}
+
+.img-span05 {
+  width: 12px;
+  font-size: 1em;
+}
+
+.container-fluid {
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+
+.navbar {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border: 0;
+    border-radius: 0;
+    margin-bottom: 0 !important;
+    font-size: 12px;
+    letter-spacing: 5px;
+}
+
+.navbar-nav li a:hover {
+    color: #1abc9c !important;
+}
+
+/* Backgrond color */
+.bg-1 {
+    background-color: #1abc9c; /* Green */
+    color: #ffffff;
+}
+
+.bg-2 {
+    background-color: #474e5d; /* Dark Blue */
+    color: #ffffff;
+}
+.bg-3 {
+    background-color: #ffffff; /* White */
+    color: #555555;
+}
+
+.bg-4 {
+    background-color: #2f2f2f;
+    color: #ffffff;
+}
+
+/* Fonts from Google Fonts */
+@font-face {
+  font-family: 'Josefin Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Josefin Sans'), local('JosefinSans'), url(https://fonts.gstatic.com/s/josefinsans/v9/xgzbb53t8j-Mo-vYa23n5nhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+}
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Raleway'), local('Raleway-Regular'), url(https://fonts.gstatic.com/s/raleway/v10/IczWvq5y_Cwwv_rBjOtT0w.woff) format('woff');
+}
