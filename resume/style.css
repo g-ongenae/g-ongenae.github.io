@@ -21,9 +21,17 @@ ul {
   list-style: none;
 }
 
+abbr[title] {
+  border-bottom: none !important;
+  cursor: inherit !important;
+  text-decoration: none !important;
+}
+
 .color-grey {
   color: grey;
 }
+
+/* Image size */
 
 .img-span6 {
   width: 250px;
@@ -50,43 +58,113 @@ ul {
   font-size: 1em;
 }
 
+/* Image Comptences Comportement */
+
+.img-comp:hover {
+  color: #1abc9c;
+}
+
+/* Progress Bar */
+
+.outer {
+  border: 2px solid silver;
+  background-color: #2f2f2f;
+  width: 200px;
+  margin: auto;
+  margin-bottom: 10px;
+  margin-top: 10px
+}
+
+.inner {
+  background-color: #1abc9c;
+  height: 5px;
+}
+
+/* Valuation of the progress bar. */
+
+.eval10 {
+  width: 200px;
+}
+
+.eval9 {
+  width: 180px;
+}
+
+.eval8 {
+  width: 160px;
+}
+
+.eval7 {
+  width: 140px;
+}
+
+.eval6 {
+  width: 120px;
+}
+
+.eval5 {
+  width: 100px;
+}
+
+.eval4 {
+  width: 80px;
+}
+
+.eval3 {
+  width: 60px;
+}
+
+.eval2 {
+  width: 40px;
+}
+
+.eval1 {
+  width: 20px;
+}
+
+.eval0 {
+  width: 5px;
+}
+
+/* Container */
+
 .container-fluid {
-    padding-top: 70px;
-    padding-bottom: 70px;
+  padding-top: 70px;
+  padding-bottom: 70px;
 }
 
 .navbar {
-    padding-top: 15px;
-    padding-bottom: 15px;
-    border: 0;
-    border-radius: 0;
-    margin-bottom: 0 !important;
-    font-size: 12px;
-    letter-spacing: 5px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0 !important;
+  font-size: 12px;
+  letter-spacing: 5px;
 }
 
 .navbar-nav li a:hover {
-    color: #1abc9c !important;
+  color: #1abc9c !important;
 }
 
 /* Backgrond color */
 .bg-1 {
-    background-color: #1abc9c; /* Green */
-    color: #ffffff;
+  background-color: #1abc9c; /* Green */
+  color: #ffffff;
 }
 
 .bg-2 {
-    background-color: #474e5d; /* Dark Blue */
-    color: #ffffff;
+  background-color: #474e5d; /* Dark Blue */
+  color: #ffffff;
 }
 .bg-3 {
-    background-color: #ffffff; /* White */
-    color: #555555;
+  background-color: #ffffff; /* White */
+  color: #555555;
 }
 
 .bg-4 {
-    background-color: #2f2f2f;
-    color: #ffffff;
+  background-color: #2f2f2f;
+  color: #ffffff;
 }
 
 /* Fonts from Google Fonts */
