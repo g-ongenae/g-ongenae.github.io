@@ -147,6 +147,19 @@ abbr[title] {
   color: #1abc9c !important;
 }
 
+/* Feedback */
+
+#feedback {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+#fb-button {
+  margin: auto;
+  margin-top: 10px;
+  width: 300px;
+}
+
 /* Backgrond color */
 .bg-1 {
   background-color: #1abc9c; /* Green */
