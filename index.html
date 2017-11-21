@@ -4,29 +4,16 @@
     <meta charset="utf-8"/>
     <title> Guillaume Ongenae </title>
     <link rel="stylesheet" href="style.css"  />
-    <!-- Import for Bootstrap And JQuery -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
-  <body class="container" >
-    <div class="bg-1 text-center">
-      <img class="img-circle" alt="Guillaume Ongenae" src="img/GuillaumeOngenae.jpg" />
-      <h1> Hey! Je suis Guillaume Ongenae </h1>
-      <h2>
-        Développeur Back End en stage le jour. <br/>
-        Apprenti écrivain la nuit. <br/>
-      </h2>
-      <div class="row">
-          <div class="col-sm-3"> <a class="btn btn-success btn-block" role="button" href="https://g-ongenae.github.io/resume/index.html"> 👨‍💼 Mon CV sur GitHub </a> </div>
-          <div class="col-sm-3"> <a class="btn btn-info btn-block" role="button" href="http://www.medotcom.com/guillaume.ongenae"> 🤖 Tous mes réseaux </a> </div>
-          <div class="col-sm-3"> <a class="btn btn-warning btn-block" role="button" href="https://twitter.com/g_ongenae"> 🐦 Twitter </a> </div>
-          <div class="col-sm-3"> <a class="btn btn-danger btn-block" role="button" href="https://g-ongenae.github.io/til/"> 👨‍🏫 Today I Learned </a> </div>
-      </div>
-      <h4> Let's get in touch 😃, <a href="https://twitter.com/intent/tweet?text=Hey @g_ongenae, let's get in touch !"> tweet me @g_ongenae </a> </h4>
+  <body>
+    <div id="app">
+      <router-view></router-view>
     </div>
+
+    <!-- Load Moon -->
+    <script src="https://unpkg.com/moonjs/dist/moon.js" charset="utf-8"></script>
+    <script src="https://unpkg.com/moon-router" charset="utf-8"></script>
+    <!-- My app -->
+    <script src="app.js" charset="utf-8"></script>
   </body>
 </html>
