@@ -196,6 +196,11 @@
       "name": "producthunt",
       "link": "https://www.producthunt.com/@g_ongenae",
       "category": "innov"
+    },
+    {
+      "name": "wakatime",
+      "link": "https://wakatime.com/@8edff054-cbf9-4eae-832b-d1a34ecb2f03",
+      "category": "dev,time"
     }
   ]
 }
