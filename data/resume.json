@@ -4,11 +4,7 @@
     "lastname": "Ongenae",
     "birthdate": "16/01/1994",
     "mail": "guillaume.ongenae@gmail.com",
-    "address": "
-      Les Cosmopolites 2
-      19 Chemin du Soleil
-      95 800 Cergy
-    ",
+    "address": "Les Cosmopolites 2\n19 Chemin du Soleil\n95 800 Cergy",
     "tel": "+33 (0)6 74 92 13 44",
     "twitter": "g_ongenae",
     "github": "g-ongenae",
@@ -56,7 +52,7 @@
             "long": "PHP: Hypertext Preprocessor",
             "type": "programming-language",
             "level": 0
-          }
+          },
           {
             "name": "PostgreSQL",
             "type": "database",
@@ -171,7 +167,7 @@
             "long": "Extensible Markup Language",
             "type": "markup-language",
             "level": 0
-          }
+          },
           {
             "name": "YAML",
             "long": "YAML Ain’t Markup Language",
@@ -180,7 +176,7 @@
           }
         ],
         "link": "https://github.com/g-ongenae"
-      },
+      }
     ],
     "languages": [
       {
@@ -196,7 +192,7 @@
       {
         "name": "Deutsch",
         "level": "A2",
-        "certification": "A2-obsolete",
+        "certification": "A2-obsolete"
       },
       {
         "name": "日本語",
@@ -238,7 +234,7 @@
       "website": "https://www.yelloan.com",
       "start": "12/05/2017",
       "end": "11/08/2017"
-    }
+    },
     {
       "company": "Pépinières de Conches",
       "type": "work and help",
@@ -246,7 +242,7 @@
       "missions": [],
       "website": "",
       "start": "",
-      "end": "",
+      "end": ""
     },
     {
       "company": "Tiffany Industries",
@@ -270,7 +266,7 @@
   "association": [
     {
       "association": "Cré'HEI",
-      "missions": [],
+      "missions": []
     }
   ],
   "study": [
@@ -313,14 +309,14 @@
       "speciality": "SVT",
       "website": "",
       "date": "2012"
-    },
+    }
   ],
   "interest": {
     "sports": [
       {
         "name": "Basket-Ball",
         "time": "10 years",
-        "position": ,
+        "position": "Ailier/Meneur",
         "club": "USLPO Conches"
       },
       {
@@ -331,8 +327,8 @@
         "website": ""
       },
       {
-        "name": "Running",
-      },
+        "name": "Running"
+      }
     ],
     "business": [
       {
