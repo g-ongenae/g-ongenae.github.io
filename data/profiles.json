@@ -201,6 +201,11 @@
       "name": "wakatime",
       "link": "https://wakatime.com/@8edff054-cbf9-4eae-832b-d1a34ecb2f03",
       "category": "dev,time"
+    },
+    {
+      "name": "CodinGame",
+      "link": "https://www.codingame.com/profile/f18b5051d779511e50e60653151c52062252031",
+      "category": "dev,learning"
     }
   ]
 }
