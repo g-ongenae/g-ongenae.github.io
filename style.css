@@ -1,6 +1,4 @@
 .container {
-  padding-top: 70px;
-  padding-bottom: 70px;
   font-size: 16px;
   background-color: #474e5d;
   font-family: 'Josefin Sans', sans-serif;
@@ -8,6 +6,12 @@
 }
 
 .bg-1 {
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translateX(-50%) translateY(-50%);
+  width: 75%;
+
   padding: 20px 20px 20px 20px;
   background-color: #1abc9c;
   color: #ffffff;
@@ -15,7 +19,7 @@
 }
 
 .img-circle {
-  width: 250px;
+  width: 35%;
 }
 
 .col-sm-3 {
@@ -29,6 +33,20 @@
 
 p a, h4 a{
   color: #000080;
+}
+
+footer {
+	/* Center at bottom */
+  position: absolute;
+  bottom: 0;
+  left: 50vw;
+  transform: translateX(-50%);
+  /* Visible on bg color */
+  color: white;
+}
+
+footer a {
+  color: lightgray;
 }
 
 /* Fonts from Google Fonts */
