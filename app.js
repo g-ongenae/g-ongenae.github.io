@@ -1,3 +1,12 @@
+function init(path) {
+ loadJSON(path, function(response) {
+  // Parse JSON string into object
+    var ac = JSON.parse(response);
+    console.log(ac);
+    return ac;
+ });
+}
+
 Moon.use(MoonRouter);
 
 const router = new MoonRouter({
@@ -32,10 +41,16 @@ Moon.component('Home', {
 
 Moon.component('Profiles', {
   template: `<div>
+    <h1> Profiles on the net: </h1>
     <ul>
-      <!--<li m-for="item in profiles"> <a href="{{item.link}}"> {{item.name}} </a> </li>-->
+      <li m-for="item in profiles"> <a href="{{item.link}}"> {{item.name}} </a> </li>
     </ul>
-  </div>`
+  </div>`,
+  data: function() {
+    return {
+      profiles: init('./data/profiles.json')
+    };
+  }
 });
 
 Moon.component('Contact', {
