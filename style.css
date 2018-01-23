@@ -43,6 +43,7 @@ footer {
   transform: translateX(-50%);
   /* Visible on bg color */
   color: white;
+  z-index: -1;
 }
 
 footer a {
