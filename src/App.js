@@ -1,7 +1,15 @@
-import profile from './profile.jpg';
-import './App.css';
+import Konami from "konami";
+import { useEffect } from "react";
+
+import profile from "./profile.jpg";
+import "./App.css";
 
 function App() {
+  useEffect(() => {
+    // eslint-disable-next-line
+    new Konami(() => alert("Joyeux Noël et Bonne année 2023 !"));
+  }, []);
+
   return (
     <div className="app">
       <section>
@@ -9,7 +17,10 @@ function App() {
 
         <br />
 
-        <a href="https://www.linkedin.com/in/guillaumeongenae/" className="title" >
+        <a
+          href="https://www.linkedin.com/in/guillaumeongenae/"
+          className="title"
+        >
           Guillaume Ongenae
         </a>
 
