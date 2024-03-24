@@ -1,27 +1,24 @@
-import profile from "./profile.jpg";
+import { useState } from "react";
+
 import "./App.css";
+import HomeView from "./components/HomeView";
+// import LanguageView from "./components/LanguageView";
+// import MusicView from "./components/MusicView";
+import SportView from "./components/SportView";
+// import WritingView from './components/WritingView';
+
+const viewMap = {
+  home: HomeView,
+  // lang: LanguageView,
+  // music: MusicView,
+  sport: SportView,
+  // writing: WritingView,
+};
 
 function App() {
-  return (
-    <div className="app">
-      <section>
-        <img src={profile} className="profile" alt="profile" />
+  const [value, setValue] = useState("home");
 
-        <br />
-
-        <a
-          href="https://www.linkedin.com/in/guillaumeongenae/"
-          className="title"
-        >
-          Guillaume Ongenae
-        </a>
-
-        <hr width="80vmin" />
-
-        <span className="subtitle">Backend developer in Paris</span>
-      </section>
-    </div>
-  );
+  return <div className="app">{viewMap[value]({ setView: setValue })}</div>;
 }
 
 export default App;

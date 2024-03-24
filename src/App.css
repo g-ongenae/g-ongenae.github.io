@@ -4,12 +4,12 @@
 
 .profile {
   border-radius: 50%;
-  height: 30vmin;
+  height: 20vmin;
   pointer-events: none;
+  margin: 5vmin;
 }
 
 section {
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -31,4 +31,65 @@ section {
   color: white;
   font-style: italic;
   font-size: calc(6px + 2vmin);
+}
+
+section h1 {
+  width: 80vh;
+  text-align: left;
+}
+
+section h3 {
+  width: 90vh;
+  text-align: left;
+}
+
+section p {
+  margin: 5px;
+}
+
+.sport-table {
+  background-color: aliceblue;
+  border-radius: 4mm;
+  border: 1mm solid orange;
+  padding: 2mm;
+}
+
+.sport-table thead tr th {
+  padding: 1mm;
+}
+
+.sport-table tbody tr td {
+  padding: 1mm;
+  text-align: left;
+}
+
+.menu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: aliceblue;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.selected {
+  background-color: gainsboro;
+}
+
+.menu li {
+  float: left;
+}
+
+.menu li a {
+  display: inline-block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.menu li a:hover {
+  background-color: #111;
+  color: white;
 }
