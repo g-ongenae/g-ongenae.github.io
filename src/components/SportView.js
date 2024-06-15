@@ -20,6 +20,14 @@ export default function SportView({ setView }) {
         US Football (4y, defensive back).
       </p>
 
+      <h3>Social Networks</h3>
+
+      <p>
+        You can follow my progress on:{" "}
+        <a href="https://www.strava.com/athletes/136716050">Strava</a> or{" "}
+        <a href="https://www.instagram.com/gongenae/">Instagram</a>
+      </p>
+
       <Menu currentView="sport" setView={setView} />
     </section>
   );
