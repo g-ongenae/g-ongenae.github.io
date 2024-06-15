@@ -19,6 +19,6 @@ export default function HomeView({ setView }) {
       <span className="subtitle">Developer in Paris</span>
 
       <Menu currentView="home" setView={setView} />
-  </section>
+    </section>
   );
 }
