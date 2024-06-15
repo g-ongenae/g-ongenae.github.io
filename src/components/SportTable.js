@@ -76,7 +76,9 @@ export default function SportTable() {
             <td>{convertExperienceDate(row.experience)}</td>
             <td>{row.level}</td>
             <td>{row.goal}</td>
-            <td><a href={row.resource.link}> {row.resource.name}</a></td>
+            <td>
+              <a href={row.resource.link}> {row.resource.name}</a>
+            </td>
           </tr>
         ))}
       </tbody>
