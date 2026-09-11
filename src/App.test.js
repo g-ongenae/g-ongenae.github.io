@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
+test("renders the three personal links", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /linkedin/i })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /github/i })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /blog/i })).toHaveAttribute("href", "/blog");
 });
