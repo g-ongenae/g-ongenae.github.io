@@ -41,6 +41,7 @@ const helpLines = alignColumns([
   ["ps -laux", "what I am doing, in detail"],
   ["pwd", "where am I"],
   ["ping", "contact info"],
+  ["cd <link>", "open a link (cd github)"],
   ["clear", "clear the history"],
   ["help", "show this list"],
 ]);
@@ -56,6 +57,24 @@ const terminalHistory = document.querySelector(".terminal-history");
 const terminalForm = document.querySelector(".terminal-form");
 const terminalInput = document.querySelector("#terminal-input");
 const blogLink = document.querySelector('[data-coming-soon="true"]');
+const linkCards = [...document.querySelectorAll(".link-card")];
+
+// "cd github", "cd GitHub/", "cd ./blog" all resolve to the matching card.
+const findLink = (target) => {
+  const name = target.replace(/^\.\//, "").replace(/\/$/, "").toLowerCase();
+  return linkCards.find(
+    (card) =>
+      card.querySelector("span")?.textContent.trim().toLowerCase() === name,
+  );
+};
+const cdTarget = (command) => command.slice(2).trim();
+const isCd = (command) => /^cd(\s|$)/.test(command);
+// A cd that actually opens a page (not the blog, not "cd" alone).
+const cdDestination = (command) => {
+  if (!isCd(command)) return undefined;
+  const link = findLink(cdTarget(command));
+  return link && !link.dataset.comingSoon ? link : undefined;
+};
 const contentByCommand = {
   whoami: document.querySelector("#hero-title"),
   "ps -aux": document.querySelector(".intro"),
@@ -88,6 +107,20 @@ const commandOutput = (command) => {
     return [
       { text: `PING ${address}`, href: `mailto:${address}` },
       "64 bytes from Paris: opening your mail client...",
+    ];
+  }
+  if (isCd(command)) {
+    const target = cdTarget(command);
+    if (!target || target === "~" || target === "/") return [];
+    const link = findLink(target);
+    if (!link) return [`cd: no such file or directory: ${target}`];
+    if (link.dataset.comingSoon) return ["fatal: coming soon"];
+    const url = new URL(link.href);
+    return [
+      {
+        text: `${url.host}${url.pathname.replace(/\/$/, "")}`,
+        href: link.href,
+      },
     ];
   }
   return [`${command}: command not found (try "help")`];
@@ -291,6 +324,10 @@ function setupTerminal() {
     } else if (line.href) {
       const anchor = document.createElement("a");
       anchor.href = line.href;
+      if (/^https?:/.test(line.href)) {
+        anchor.target = "_blank";
+        anchor.rel = "noreferrer";
+      }
       anchor.textContent = line.text;
       lineElement.append(anchor);
     } else {
@@ -333,6 +370,8 @@ function setupTerminal() {
     revealCommand(command, { instant });
     if (command === "ping")
       window.location.assign(`mailto:${contactAddress()}`);
+    const destination = cdDestination(command);
+    if (destination) window.open(destination.href, "_blank", "noreferrer");
     cancelHistoryFade();
     terminalInput.value = "";
 
@@ -348,7 +387,7 @@ function setupTerminal() {
     entry.append(commandElement, outputElement);
     terminalHistory.append(entry);
 
-    if (instant) {
+    if (instant || output.length === 0) {
       output.forEach((line) => appendLine(outputElement, line));
       scheduleHistoryFade();
       return;
