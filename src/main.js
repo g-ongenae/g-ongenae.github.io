@@ -1,7 +1,21 @@
 import "./index.css";
 import "./App.css";
 
-const commands = ["whoami", "cwd", "ps -aux", "ls -la"];
+// Useful content first (name, links), ambience afterwards.
+const commands = ["whoami", "ls -la", "ps -aux", "cwd"];
+const introPlayedKey = "intro-played";
+// Milliseconds. Kept fast enough that the whole sequence lands in ~4s.
+const timing = {
+  initialDelay: 200,
+  typing: 45,
+  afterTyping: 180,
+  beforeOutput: 150,
+  betweenLines: 140,
+  betweenCommands: 350,
+  historyLifetime: 30000,
+  historyLifetimeMobile: 7000,
+  historyFade: 1500,
+};
 const processWords = ["Fastening.", "Vibing.", "Telling."];
 const links = ["LinkedIn", "GitHub", "Blog"];
 const faviconEmojis = ["🎷", "🎸", "🥁", "🧘‍♂️", "🕺", "🏃‍♂️", "✍️", "👨‍💻"];
@@ -129,36 +143,112 @@ function setupEmojiRain() {
   syncAnimation();
 }
 
-function revealCommand(command) {
+function revealCommand(command, { instant = false } = {}) {
   const element = contentByCommand[command];
-  if (!element || element.classList.contains("command-revealed")) return;
+  if (!element || !element.classList.contains("command-hidden")) return;
   element.classList.remove("command-hidden");
-  element.classList.add("command-revealed");
+  if (!instant) element.classList.add("command-revealed");
+}
+
+function readIntroPlayed() {
+  try {
+    return window.sessionStorage.getItem(introPlayedKey) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeIntroPlayed() {
+  try {
+    window.sessionStorage.setItem(introPlayedKey, "1");
+  } catch {
+    // Storage unavailable (privacy mode); the intro simply replays.
+  }
 }
 
 function setupTerminal() {
+  const isMobile = window.matchMedia("(max-width: 560px)");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const skipIntro = reducedMotion.matches || readIntroPlayed();
+
   let nextId = 0;
-  let commandIndex = 0;
-  let running = false;
   let fadeTimer;
   let clearTimer;
+  // Output lines still waiting to print; flushed in order on fast-forward.
+  const pendingLines = new Map();
+  // Sequencing steps (pauses, next-command scheduling); dropped on fast-forward.
+  const pendingSteps = new Set();
 
-  const runCommand = (rawCommand) => {
-    const command = rawCommand.trim().replace(/^\$\s*/, "");
-    if (!command || running) return;
+  const scheduleLine = (fn, ms) => {
+    const id = window.setTimeout(() => {
+      pendingLines.delete(id);
+      fn();
+    }, ms);
+    pendingLines.set(id, fn);
+  };
 
-    running = true;
-    const id = nextId++;
-    const output = commandOutput(command);
-    revealCommand(command);
+  const scheduleStep = (fn, ms) => {
+    const id = window.setTimeout(() => {
+      pendingSteps.delete(id);
+      fn();
+    }, ms);
+    pendingSteps.add(id);
+  };
+
+  const flushPendingLines = () => {
+    const lines = [...pendingLines];
+    pendingLines.clear();
+    for (const [id, fn] of lines) {
+      window.clearTimeout(id);
+      fn();
+    }
+  };
+
+  const cancelPendingSteps = () => {
+    for (const id of pendingSteps) window.clearTimeout(id);
+    pendingSteps.clear();
+  };
+
+  const cancelHistoryFade = () => {
     window.clearTimeout(fadeTimer);
     window.clearTimeout(clearTimer);
     terminalHistory.classList.remove("history-fading");
+  };
+
+  const scheduleHistoryFade = () => {
+    cancelHistoryFade();
+    fadeTimer = window.setTimeout(
+      () => {
+        terminalHistory.classList.add("history-fading");
+        clearTimer = window.setTimeout(() => {
+          terminalHistory.replaceChildren();
+          terminalHistory.classList.remove("history-fading");
+        }, timing.historyFade);
+      },
+      isMobile.matches ? timing.historyLifetimeMobile : timing.historyLifetime,
+    );
+  };
+
+  const appendLine = (outputElement, line) => {
+    const lineElement = document.createElement("div");
+    lineElement.className = "terminal-line";
+    lineElement.textContent = line;
+    outputElement.append(lineElement);
+  };
+
+  const runCommand = (rawCommand, { instant = false } = {}) => {
+    const command = rawCommand.trim().replace(/^\$\s*/, "");
+    if (!command) return;
+
+    const output = commandOutput(command);
+    // Reveal on submit, not after the output finishes printing.
+    revealCommand(command, { instant });
+    cancelHistoryFade();
     terminalInput.value = "";
 
     const entry = document.createElement("div");
     entry.className = "terminal-entry";
-    entry.dataset.id = id;
+    entry.dataset.id = nextId++;
     const commandElement = document.createElement("div");
     commandElement.className = "terminal-command";
     commandElement.innerHTML = '<span class="prompt">$</span> ';
@@ -168,27 +258,21 @@ function setupTerminal() {
     entry.append(commandElement, outputElement);
     terminalHistory.append(entry);
 
-    window.setTimeout(() => {
-      output.forEach((line, index) => {
-        window.setTimeout(() => {
-          const lineElement = document.createElement("div");
-          lineElement.className = "terminal-line";
-          lineElement.textContent = line;
-          outputElement.append(lineElement);
+    if (instant) {
+      output.forEach((line) => appendLine(outputElement, line));
+      scheduleHistoryFade();
+      return;
+    }
 
-          if (index === output.length - 1) {
-            running = false;
-            fadeTimer = window.setTimeout(() => {
-              terminalHistory.classList.add("history-fading");
-              clearTimer = window.setTimeout(() => {
-                terminalHistory.replaceChildren();
-                terminalHistory.classList.remove("history-fading");
-              }, 1500);
-            }, window.matchMedia("(max-width: 560px)").matches ? 7000 : 30000);
-          }
-        }, index * (command === "ps -aux" ? 380 : 260));
-      });
-    }, command === "ps -aux" ? 360 : 240);
+    output.forEach((line, index) => {
+      scheduleLine(
+        () => {
+          appendLine(outputElement, line);
+          if (index === output.length - 1) scheduleHistoryFade();
+        },
+        timing.beforeOutput + index * timing.betweenLines,
+      );
+    });
   };
 
   terminalForm.addEventListener("submit", (event) => {
@@ -196,33 +280,86 @@ function setupTerminal() {
     runCommand(terminalInput.value);
   });
 
-  const playNextCommand = () => {
-    if (commandIndex >= commands.length) return;
-    const command = commands[commandIndex++];
-    let character = 0;
-    terminalInput.value = "";
-    const typingTimer = window.setInterval(() => {
-      character += 1;
-      terminalInput.value = command.slice(0, character);
-      if (character === command.length) {
-        window.clearInterval(typingTimer);
-        window.setTimeout(() => {
-          runCommand(command);
-          if (commandIndex < commands.length) window.setTimeout(playNextCommand, 2600);
-        }, 520);
-      }
-    }, 105);
+  // --- Scripted intro -------------------------------------------------------
+
+  const queue = [...commands];
+  let currentlyTyping;
+  let typingTimer;
+  let introDone = false;
+
+  const finishIntro = () => {
+    if (introDone) return;
+    introDone = true;
+    writeIntroPlayed();
+    document.removeEventListener("keydown", fastForward);
+    document.removeEventListener("pointerdown", fastForward);
   };
 
-  window.setTimeout(playNextCommand, 900);
+  // Any key or click skips straight to the finished state.
+  const fastForward = () => {
+    if (introDone) return;
+    window.clearInterval(typingTimer);
+    cancelPendingSteps();
+    flushPendingLines();
+    const remaining = currentlyTyping
+      ? [currentlyTyping, ...queue]
+      : [...queue];
+    currentlyTyping = undefined;
+    queue.length = 0;
+    for (const command of remaining) runCommand(command, { instant: true });
+    finishIntro();
+  };
+
+  const playNextCommand = () => {
+    const command = queue.shift();
+    if (!command) {
+      finishIntro();
+      return;
+    }
+
+    currentlyTyping = command;
+    let character = 0;
+    terminalInput.value = "";
+    typingTimer = window.setInterval(() => {
+      character += 1;
+      terminalInput.value = command.slice(0, character);
+      if (character < command.length) return;
+
+      window.clearInterval(typingTimer);
+      typingTimer = undefined;
+      scheduleStep(() => {
+        currentlyTyping = undefined;
+        runCommand(command);
+        // Overlap: start typing the next command as soon as this output
+        // begins printing, instead of waiting for it to finish.
+        scheduleStep(
+          playNextCommand,
+          timing.beforeOutput + timing.betweenCommands,
+        );
+      }, timing.afterTyping);
+    }, timing.typing);
+  };
+
+  if (skipIntro) {
+    // Reduced motion or a repeat visit: everything on screen immediately,
+    // with the history already printed.
+    for (const command of queue) runCommand(command, { instant: true });
+    queue.length = 0;
+    finishIntro();
+    return;
+  }
+
+  document.addEventListener("keydown", fastForward);
+  document.addEventListener("pointerdown", fastForward);
+  scheduleStep(playNextCommand, timing.initialDelay);
 }
 
 function setupBlogLink() {
   blogLink?.addEventListener("click", (event) => {
     event.preventDefault();
-    blogLink.querySelector("span")?.replaceChildren(
-      document.createTextNode("Coming soon"),
-    );
+    blogLink
+      .querySelector("span")
+      ?.replaceChildren(document.createTextNode("Coming soon"));
     blogLink.setAttribute("aria-label", "Blog — Coming soon");
   });
 }
