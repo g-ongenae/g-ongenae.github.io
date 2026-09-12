@@ -1,6 +1,6 @@
-# Guillaume Ongenae
+# About me
 
-Small static personal landing page built with semantic HTML, CSS, and browser JavaScript. It does not use React.
+Small static personal landing page built with semantic HTML, CSS, and browser JavaScript.
 
 ## Development
 
@@ -8,8 +8,6 @@ Small static personal landing page built with semantic HTML, CSS, and browser Ja
 npm install
 npm start
 ```
-
-Vite prints both the local URL and the LAN URL. Use the LAN URL to open the page from another device on the same network.
 
 ## Production build
 
