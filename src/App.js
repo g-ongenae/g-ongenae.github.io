@@ -30,7 +30,7 @@ function App() {
       <div className="scanlines" aria-hidden="true" />
       <section className="hero" aria-labelledby="hero-title">
         <h1 id="hero-title">Guillaume<span>Ongenae</span></h1>
-        <p className="intro">Securizing. Vibing. Telling.</p>
+        <p className="intro">Fastening. Vibing. Telling.</p>
         <nav className="links" aria-label="Personal links">
           {links.map((link) => (
             <a className="link-card" href={link.href} key={link.label}
