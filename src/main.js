@@ -11,6 +11,7 @@ const rainFps = 20;
 const terminalHistory = document.querySelector(".terminal-history");
 const terminalForm = document.querySelector(".terminal-form");
 const terminalInput = document.querySelector("#terminal-input");
+const blogLink = document.querySelector('[data-coming-soon="true"]');
 const contentByCommand = {
   whoami: document.querySelector("#hero-title"),
   "ps -aux": document.querySelector(".intro"),
@@ -216,6 +217,17 @@ function setupTerminal() {
   window.setTimeout(playNextCommand, 900);
 }
 
+function setupBlogLink() {
+  blogLink?.addEventListener("click", (event) => {
+    event.preventDefault();
+    blogLink.querySelector("span")?.replaceChildren(
+      document.createTextNode("Coming soon"),
+    );
+    blogLink.setAttribute("aria-label", "Blog — Coming soon");
+  });
+}
+
 setRandomFavicon();
 setupEmojiRain();
 setupTerminal();
+setupBlogLink();
