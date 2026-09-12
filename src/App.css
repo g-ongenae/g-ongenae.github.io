@@ -14,6 +14,7 @@
   --fg-muted: #b2dcb8;
   --line: rgba(157, 255, 176, 0.42);
   --line-soft: rgba(157, 255, 176, 0.18);
+  --glow: 0 0 4px rgba(157, 255, 176, 0.35);
   /* Spacing scale (0.25rem grid). */
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -82,7 +83,7 @@
   background: repeating-linear-gradient(
     0deg,
     transparent 0 3px,
-    #9dffb0 4px,
+    var(--green) 4px,
     transparent 5px
   );
   mix-blend-mode: screen;
@@ -197,7 +198,7 @@ h1 span {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: var(--space-2);
   color: var(--green-dim);
   font-size: var(--text-xs);
   letter-spacing: 0.1em;
@@ -207,7 +208,7 @@ h1 span {
 .status-location {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: var(--space-2);
 }
 /* No leading divider while "online" hasn't been revealed yet. */
 .status-online.command-hidden + .status-location .status-divider {
@@ -265,7 +266,7 @@ h1 span {
 /* A faint phosphor glow on the prompt lines only; output stays crisp. */
 .terminal-command {
   color: var(--green-bright);
-  text-shadow: 0 0 4px rgba(157, 255, 176, 0.35);
+  text-shadow: var(--glow);
 }
 .terminal-output {
   padding-left: 1.25rem;
@@ -302,7 +303,7 @@ h1 span {
 .prompt {
   margin-right: var(--space-2);
   color: var(--green);
-  text-shadow: 0 0 4px rgba(157, 255, 176, 0.35);
+  text-shadow: var(--glow);
 }
 .terminal-form input {
   /* Sized to content (see syncInputWidth); field-sizing covers browsers
