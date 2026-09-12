@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 
 const emojis = ["🎷", "🎸", "🥁", "🧘‍♂️", "🕺", "🏃‍♂️", "✍️", "👨‍💻"];
@@ -44,16 +44,18 @@ function Terminal({ onCommand }) {
   const runningRef = useRef(false);
   const fadeTimerRef = useRef(null);
   const clearTimerRef = useRef(null);
+  const onCommandRef = useRef(onCommand);
   const [historyFading, setHistoryFading] = useState(false);
+  onCommandRef.current = onCommand;
 
-  const runCommand = (rawCommand) => {
+  const runCommand = useCallback((rawCommand) => {
     const command = rawCommand.trim().replace(/^\$\s*/, "");
     if (!command || runningRef.current) return;
 
     runningRef.current = true;
     const id = idRef.current++;
     const output = commandOutput(command);
-    onCommand(command);
+    onCommandRef.current(command);
     window.clearTimeout(fadeTimerRef.current);
     window.clearTimeout(clearTimerRef.current);
     setHistoryFading(false);
@@ -76,7 +78,7 @@ function Terminal({ onCommand }) {
         }, index * (command === "ps -aux" ? 380 : 260));
       });
     }, command === "ps -aux" ? 360 : 240);
-  };
+  }, []);
 
   useEffect(() => {
     let typingTimer;
@@ -118,7 +120,7 @@ function Terminal({ onCommand }) {
       window.clearTimeout(fadeTimerRef.current);
       window.clearTimeout(clearTimerRef.current);
     };
-  }, []);
+  }, [runCommand]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
