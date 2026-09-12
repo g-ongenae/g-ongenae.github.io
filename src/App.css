@@ -6,8 +6,13 @@
   --green-dim: #5bbf6d;
   --red: #ff6b6b;
   --black: #030806;
+  /* One left edge shared by the hero, the terminal and the status bar:
+     the hero column is centred (720px) on wide screens, 5vw on narrow ones. */
+  --gutter: max(5vw, calc(50vw - 360px));
 }
 .landing-page {
+  display: grid;
+  grid-template-rows: 1fr auto;
   min-height: 100svh;
   position: relative;
   overflow: hidden;
@@ -67,17 +72,28 @@
   mix-blend-mode: screen;
 }
 .hero {
-  width: min(90%, 720px);
-  min-height: 100svh;
-  box-sizing: border-box;
+  grid-row: 1;
+  width: min(calc(100% - 2 * var(--gutter)), 720px);
   display: flex;
   position: relative;
   z-index: 2;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  margin: 0 auto;
-  padding: 5rem 0 7rem;
+  margin: 0 0 0 var(--gutter);
+  padding: 3rem 0 2rem;
+}
+/* Terminal and status bar share one row below the hero. Nothing is
+   absolutely positioned, so the history can never paint over the links. */
+.bottom-bar {
+  grid-row: 2;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 var(--gutter) 2.5rem;
 }
 .eyebrow,
 .intro,
@@ -113,14 +129,20 @@ h1 span {
 }
 .links {
   display: grid;
-  width: min(100%, 430px);
+  width: min(100%, 560px);
   gap: 0.7rem;
+}
+/* Three items: a row on desktop, a stack on phones. */
+@media (min-width: 720px) {
+  .links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 .link-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.05rem 1.25rem;
+  padding: 0.9rem 1.1rem;
   border: 1px solid rgba(157, 255, 176, 0.42);
   color: var(--green-bright);
   font-size: 0.83rem;
@@ -137,7 +159,7 @@ h1 span {
   border-color: var(--green);
   background: rgba(121, 255, 145, 0.13);
   outline: none;
-  transform: translateX(0.4rem);
+  transform: translateY(-0.15rem);
 }
 .link-card.is-coming-soon,
 .link-card.is-coming-soon:hover,
@@ -155,10 +177,7 @@ h1 span {
   font-size: 1.2rem;
 }
 .status-bar {
-  position: absolute;
-  right: 5%;
-  bottom: 2.5rem;
-  z-index: 2;
+  flex: none;
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -195,11 +214,8 @@ h1 span {
   animation: content-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .terminal {
-  position: absolute;
-  left: 5%;
-  bottom: 2.35rem;
-  z-index: 3;
-  width: min(360px, 88vw);
+  flex: 0 1 360px;
+  min-width: 0;
   color: var(--green);
   font-family: "Space Mono", monospace;
   font-size: 0.68rem;
@@ -208,7 +224,9 @@ h1 span {
 }
 .terminal-history {
   display: flex;
-  max-height: 32vh;
+  /* Fixed height: the row never resizes, so the hero never jumps when
+     output prints. Newest entries stay at the bottom. */
+  height: min(26vh, 14rem);
   flex-direction: column;
   gap: 0.75rem;
   /* Newest entry stays visible above the prompt; older ones fade off the top. */
@@ -345,9 +363,8 @@ h1 span {
   }
 
   .hero {
-    min-height: auto;
-    max-width: 100%;
     /* Keep the identity block close to the top on short phone viewports. */
+    justify-content: flex-start;
     padding: clamp(1.25rem, 4vh, 2.5rem) 0 1.5rem;
   }
 
@@ -361,23 +378,19 @@ h1 span {
     letter-spacing: -0.04em;
   }
 
-  .status-bar {
-    right: auto;
-    left: 5%;
+  .bottom-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
   }
 
-  /* Keep command history below the hero so it cannot paint over the links. */
   .terminal {
-    position: relative;
-    left: auto;
-    bottom: auto;
-    display: flex;
-    min-height: 30vh;
-    flex-direction: column;
-    justify-content: flex-end;
-    width: 90%;
-    max-width: 100%;
-    margin: 0 auto 5.7rem;
+    flex: none;
+  }
+
+  .terminal-history {
+    height: 10rem;
   }
 
   .terminal-entry {

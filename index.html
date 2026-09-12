@@ -43,32 +43,34 @@
         </nav>
       </section>
 
-      <footer class="status-bar">
-        <span class="status-online command-hidden">
-          <span class="status-dot"></span>
-          <span>online</span>
-        </span>
-        <span class="status-location command-hidden">
-          <span class="status-divider">|</span>
-          <span>Paris, FR</span>
-        </span>
-      </footer>
+      <div class="bottom-bar">
+        <section class="terminal" aria-label="Command history">
+          <div class="terminal-history" aria-live="polite"></div>
+          <form class="terminal-form">
+            <label class="sr-only" for="terminal-input">Enter a command</label>
+            <span class="prompt" aria-hidden="true">$</span>
+            <input
+              id="terminal-input"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Terminal command input"
+              autofocus
+            />
+            <span class="cursor" aria-hidden="true"></span>
+          </form>
+        </section>
 
-      <section class="terminal" aria-label="Command history">
-        <div class="terminal-history" aria-live="polite"></div>
-        <form class="terminal-form">
-          <label class="sr-only" for="terminal-input">Enter a command</label>
-          <span class="prompt" aria-hidden="true">$</span>
-          <input
-            id="terminal-input"
-            autocomplete="off"
-            spellcheck="false"
-            aria-label="Terminal command input"
-            autofocus
-          />
-          <span class="cursor" aria-hidden="true"></span>
-        </form>
-      </section>
+        <footer class="status-bar">
+          <span class="status-online command-hidden">
+            <span class="status-dot"></span>
+            <span>online</span>
+          </span>
+          <span class="status-location command-hidden">
+            <span class="status-divider">|</span>
+            <span>Paris, FR</span>
+          </span>
+        </footer>
+      </div>
     </main>
     <script type="module" src="/src/main.js"></script>
   </body>
