@@ -189,6 +189,8 @@ h1 span {
   max-height: 32vh;
   flex-direction: column;
   gap: 0.75rem;
+  /* Newest entry stays visible above the prompt; older ones fade off the top. */
+  justify-content: flex-end;
   margin-bottom: 0.65rem;
   overflow: hidden;
   mask-image: linear-gradient(to bottom, transparent, black 14%, black 100%);
@@ -212,6 +214,17 @@ h1 span {
 .terminal-line {
   white-space: pre-wrap;
   animation: line-in 300ms ease-out both;
+}
+.terminal-columns {
+  display: flex;
+  gap: 1ch;
+}
+.terminal-columns span:first-child {
+  flex: none;
+}
+.terminal-columns span:last-child {
+  flex: 1;
+  min-width: 0;
 }
 .terminal-line a {
   color: inherit;

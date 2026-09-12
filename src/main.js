@@ -16,10 +16,11 @@ const timing = {
   historyLifetimeMobile: 7000,
   historyFade: 1500,
 };
-// Two-column output ("name   - description") aligned on the dash.
+// Two-column output ("name - description"); the name column is as wide as
+// the longest name so the dashes line up, even when a description wraps.
 const alignColumns = (rows) => {
   const width = Math.max(...rows.map(([name]) => name.length));
-  return rows.map(([name, text]) => `${name.padEnd(width)} - ${text}`);
+  return rows.map(([name, text]) => ({ name, text, width }));
 };
 const processes = [
   ["grounding", "Laying foundations at my work (Algoan)."],
@@ -280,17 +281,26 @@ function setupTerminal() {
     );
   };
 
-  // A line is either plain text or { text, href } for a clickable link.
+  // A line is plain text, { text, href } for a clickable link, or
+  // { name, text, width } for an aligned two-column row.
   const appendLine = (outputElement, line) => {
     const lineElement = document.createElement("div");
     lineElement.className = "terminal-line";
     if (typeof line === "string") {
       lineElement.textContent = line;
-    } else {
+    } else if (line.href) {
       const anchor = document.createElement("a");
       anchor.href = line.href;
       anchor.textContent = line.text;
       lineElement.append(anchor);
+    } else {
+      lineElement.classList.add("terminal-columns");
+      const nameElement = document.createElement("span");
+      nameElement.style.width = `${line.width}ch`;
+      nameElement.textContent = line.name;
+      const textElement = document.createElement("span");
+      textElement.textContent = `- ${line.text}`;
+      lineElement.append(nameElement, textElement);
     }
     outputElement.append(lineElement);
   };
