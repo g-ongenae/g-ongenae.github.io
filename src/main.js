@@ -359,6 +359,30 @@ function setupTerminal() {
     runCommand(terminalInput.value);
   });
 
+  // --- Focus: the input is the only field, so it should always be ready ---
+
+  const focusInput = () => {
+    if (document.activeElement === terminalInput) return;
+    terminalInput.focus({ preventScroll: true });
+  };
+  const isInteractive = (target) =>
+    target instanceof Element && target.closest("a, button, input");
+
+  focusInput();
+  window.addEventListener("focus", focusInput);
+  // Tapping anywhere that isn't a link brings the keyboard/caret back.
+  document.addEventListener("click", (event) => {
+    if (!isInteractive(event.target)) focusInput();
+  });
+  // Typing anywhere lands in the input; keys that navigate (Tab, Enter on a
+  // focused link, shortcuts with modifiers) are left alone.
+  document.addEventListener("keydown", (event) => {
+    if (event.target === terminalInput) return;
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (event.key.length !== 1 && event.key !== "Backspace") return;
+    focusInput();
+  });
+
   // --- Scripted intro -------------------------------------------------------
 
   const queue = [...commands];
