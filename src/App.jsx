@@ -21,8 +21,16 @@ const commandOutput = (command) => {
 };
 
 function EmojiRain() {
+  const [pageHidden, setPageHidden] = useState(() => document.hidden);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => setPageHidden(document.hidden);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
   return (
-    <div className="emoji-rain" aria-hidden="true">
+    <div className={`emoji-rain${pageHidden ? " is-paused" : ""}`} aria-hidden="true">
       {Array.from({ length: 34 }, (_, index) => (
         <span className="emoji-drop" key={index} style={{
           "--column": index,
