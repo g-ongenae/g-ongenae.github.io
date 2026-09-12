@@ -167,6 +167,16 @@ h1 span {
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
+.status-online,
+.status-location {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+/* No leading divider while "online" hasn't been revealed yet. */
+.status-online.command-hidden + .status-location .status-divider {
+  display: none;
+}
 .status-dot {
   width: 6px;
   height: 6px;

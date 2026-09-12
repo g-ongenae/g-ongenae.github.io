@@ -2,7 +2,7 @@ import "./index.css";
 import "./App.css";
 
 // Useful content first (name, links), ambience afterwards.
-const commands = ["whoami", "ls -la", "ps -aux", "pwd"];
+const commands = ["whoami", "ls -la", "ps -aux", "pwd & ssh"];
 const introPlayedKey = "intro-played";
 // Milliseconds. Kept fast enough that the whole sequence lands in ~4s.
 const timing = {
@@ -40,6 +40,7 @@ const helpLines = alignColumns([
   ["ps -aux", "what I am doing"],
   ["ps -laux", "what I am doing, in detail"],
   ["pwd", "where am I"],
+  ["ssh", "am I online?"],
   ["ping", "contact info"],
   ["cd <link>", "open a link (cd github)"],
   ["clear", "clear the history"],
@@ -81,16 +82,27 @@ const contentByCommand = {
   whoami: document.querySelector("#hero-title"),
   "ps -aux": document.querySelector(".intro"),
   "ls -la": document.querySelector(".links"),
-  pwd: document.querySelector(".status-bar"),
+  pwd: document.querySelector(".status-location"),
+  ssh: document.querySelector(".status-online"),
 };
 contentByCommand["ps -laux"] = contentByCommand["ps -aux"];
 
-// Accept the common spellings of each command (e.g. "ps aux" for "ps -aux").
-const normalizeCommand = (command) => {
-  const normalized = command
+const collapseCommand = (command) =>
+  command
     .trim()
     .replace(/^\$\s*/, "")
     .replace(/\s+/g, " ");
+
+// "pwd & ssh", "pwd && ssh" and "pwd; ssh" all run both, in order.
+const splitCommands = (command) =>
+  collapseCommand(command)
+    .split(/\s*(?:&&|&|;)\s*/)
+    .map(normalizeCommand)
+    .filter(Boolean);
+
+// Accept the common spellings of each command (e.g. "ps aux" for "ps -aux").
+const normalizeCommand = (command) => {
+  const normalized = collapseCommand(command);
   if (/^ps( -?(aux|xau|uax))?$/.test(normalized)) return "ps -aux";
   if (/^ps -?(laux|alux|aulx)$/.test(normalized)) return "ps -laux";
   if (/^ls( -(la|al|a|l))?$/.test(normalized)) return "ls -la";
@@ -99,7 +111,8 @@ const normalizeCommand = (command) => {
 
 const commandOutput = (command) => {
   if (command === "whoami") return ["Guillaume Ongenae"];
-  if (command === "pwd") return ["/Online Paris"];
+  if (command === "pwd") return ["Paris, FR"];
+  if (/^ssh(\s|$)/.test(command)) return ["online"];
   if (command === "ps -aux") return processWords;
   if (command === "ps -laux") return processDetails;
   if (command === "ls -la") return links;
@@ -345,9 +358,11 @@ function setupTerminal() {
   };
 
   const runCommand = (rawCommand, { instant = false } = {}) => {
-    const command = normalizeCommand(rawCommand);
+    const parts = splitCommands(rawCommand);
+    // Single commands show their canonical spelling; chains show as typed.
+    const command = parts.length === 1 ? parts[0] : collapseCommand(rawCommand);
 
-    if (!command) {
+    if (parts.length === 0) {
       // Enter on an empty line echoes a bare prompt, like a real shell.
       const entry = document.createElement("div");
       entry.className = "terminal-entry";
@@ -367,13 +382,14 @@ function setupTerminal() {
       return;
     }
 
-    const output = commandOutput(command);
-    // Reveal on submit, not after the output finishes printing.
-    revealCommand(command, { instant });
-    if (command === "ping")
-      window.location.assign(`mailto:${contactAddress()}`);
-    const destination = cdDestination(command);
-    if (destination) window.open(destination.href, "_blank", "noreferrer");
+    const output = parts.flatMap(commandOutput);
+    for (const part of parts) {
+      // Reveal on submit, not after the output finishes printing.
+      revealCommand(part, { instant });
+      if (part === "ping") window.location.assign(`mailto:${contactAddress()}`);
+      const destination = cdDestination(part);
+      if (destination) window.open(destination.href, "_blank", "noreferrer");
+    }
     cancelHistoryFade();
     terminalInput.value = "";
 
