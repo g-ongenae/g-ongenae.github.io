@@ -210,7 +210,13 @@ h1 span {
   color: var(--green-dim);
 }
 .terminal-line {
+  white-space: pre-wrap;
   animation: line-in 300ms ease-out both;
+}
+.terminal-line a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 .terminal-form {
   display: flex;

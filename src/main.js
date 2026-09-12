@@ -2,7 +2,7 @@ import "./index.css";
 import "./App.css";
 
 // Useful content first (name, links), ambience afterwards.
-const commands = ["whoami", "ls -la", "ps -aux", "cwd"];
+const commands = ["whoami", "ls -la", "ps -aux", "pwd"];
 const introPlayedKey = "intro-played";
 // Milliseconds. Kept fast enough that the whole sequence lands in ~4s.
 const timing = {
@@ -16,7 +16,36 @@ const timing = {
   historyLifetimeMobile: 7000,
   historyFade: 1500,
 };
-const processWords = ["Fastening.", "Vibing.", "Telling."];
+// Two-column output ("name   - description") aligned on the dash.
+const alignColumns = (rows) => {
+  const width = Math.max(...rows.map(([name]) => name.length));
+  return rows.map(([name, text]) => `${name.padEnd(width)} - ${text}`);
+};
+const processes = [
+  ["grounding", "Laying foundations at my work (Algoan)."],
+  [
+    "vibing",
+    "Creating apps, dancing, travelling, writing, playing music and learning languages.",
+  ],
+  ["telling", "Taking notes on my blog and on LinkedIn."],
+];
+const processWords = processes.map(
+  ([name]) => `${name[0].toUpperCase()}${name.slice(1)}.`,
+);
+const processDetails = alignColumns(processes);
+const helpLines = alignColumns([
+  ["whoami", "who is behind this page"],
+  ["ls -la", "list links"],
+  ["ps -aux", "what I am doing"],
+  ["ps -laux", "what I am doing, in detail"],
+  ["pwd", "where am I"],
+  ["ping", "contact info"],
+  ["clear", "clear the history"],
+  ["help", "show this list"],
+]);
+// Kept encoded so address scrapers don't pick it up from the bundle.
+const contactAddress = () =>
+  window.atob("Z3VpbGxhdW1lLm9uZ2VuYWVAZ21haWwuY29t");
 const links = ["LinkedIn", "GitHub", "Blog"];
 const faviconEmojis = ["🎷", "🎸", "🥁", "🧘‍♂️", "🕺", "🏃‍♂️", "✍️", "👨‍💻"];
 const emojiDropCount = 34;
@@ -30,15 +59,37 @@ const contentByCommand = {
   whoami: document.querySelector("#hero-title"),
   "ps -aux": document.querySelector(".intro"),
   "ls -la": document.querySelector(".links"),
-  cwd: document.querySelector(".status-bar"),
+  pwd: document.querySelector(".status-bar"),
+};
+contentByCommand["ps -laux"] = contentByCommand["ps -aux"];
+
+// Accept the common spellings of each command (e.g. "ps aux" for "ps -aux").
+const normalizeCommand = (command) => {
+  const normalized = command
+    .trim()
+    .replace(/^\$\s*/, "")
+    .replace(/\s+/g, " ");
+  if (/^ps( -?(aux|xau|uax))?$/.test(normalized)) return "ps -aux";
+  if (/^ps -?(laux|alux|aulx)$/.test(normalized)) return "ps -laux";
+  if (/^ls( -(la|al|a|l))?$/.test(normalized)) return "ls -la";
+  return normalized;
 };
 
 const commandOutput = (command) => {
   if (command === "whoami") return ["Guillaume Ongenae"];
-  if (command === "cwd") return ["/Online Paris"];
+  if (command === "pwd") return ["/Online Paris"];
   if (command === "ps -aux") return processWords;
+  if (command === "ps -laux") return processDetails;
   if (command === "ls -la") return links;
-  return ["command not found"];
+  if (command === "help") return helpLines;
+  if (command === "ping") {
+    const address = contactAddress();
+    return [
+      { text: `PING ${address}`, href: `mailto:${address}` },
+      "64 bytes from Paris: opening your mail client...",
+    ];
+  }
+  return [`${command}: command not found (try "help")`];
 };
 
 function setRandomFavicon() {
@@ -229,20 +280,38 @@ function setupTerminal() {
     );
   };
 
+  // A line is either plain text or { text, href } for a clickable link.
   const appendLine = (outputElement, line) => {
     const lineElement = document.createElement("div");
     lineElement.className = "terminal-line";
-    lineElement.textContent = line;
+    if (typeof line === "string") {
+      lineElement.textContent = line;
+    } else {
+      const anchor = document.createElement("a");
+      anchor.href = line.href;
+      anchor.textContent = line.text;
+      lineElement.append(anchor);
+    }
     outputElement.append(lineElement);
   };
 
   const runCommand = (rawCommand, { instant = false } = {}) => {
-    const command = rawCommand.trim().replace(/^\$\s*/, "");
+    const command = normalizeCommand(rawCommand);
     if (!command) return;
+
+    if (command === "clear") {
+      flushPendingLines();
+      cancelHistoryFade();
+      terminalHistory.replaceChildren();
+      terminalInput.value = "";
+      return;
+    }
 
     const output = commandOutput(command);
     // Reveal on submit, not after the output finishes printing.
     revealCommand(command, { instant });
+    if (command === "ping")
+      window.location.assign(`mailto:${contactAddress()}`);
     cancelHistoryFade();
     terminalInput.value = "";
 
