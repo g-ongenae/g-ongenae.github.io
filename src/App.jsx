@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 
 const emojis = ["🎷", "🎸", "🥁", "🧘‍♂️", "🕺", "🏃‍♂️", "✍️", "👨‍💻"];
+const emojiDropCount = 18;
 
 const links = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/guillaumeongenae/", icon: "↗" },
@@ -31,9 +32,9 @@ function EmojiRain() {
 
   return (
     <div className={`emoji-rain${pageHidden ? " is-paused" : ""}`} aria-hidden="true">
-      {Array.from({ length: 34 }, (_, index) => (
+      {Array.from({ length: emojiDropCount }, (_, index) => (
         <span className="emoji-drop" key={index} style={{
-          "--column": index,
+          "--left": `${((index + 0.5) / emojiDropCount) * 100}%`,
           "--delay": `${(index * 0.37) % 8}s`,
           "--duration": `${7 + ((index * 1.13) % 7)}s`,
           "--size": `${1.05 + ((index * 0.17) % 0.75)}rem`,

@@ -4,8 +4,9 @@
 .landing-page { min-height: 100svh; position: relative; overflow: hidden; isolation: isolate; color: var(--green-bright); background: radial-gradient(circle at 50% 42%, #0b2815 0%, var(--black) 58%); }
 .landing-page::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .19; background-image: linear-gradient(rgba(111,255,133,.2) 1px, transparent 1px), linear-gradient(90deg, rgba(111,255,133,.2) 1px, transparent 1px); background-size: 72px 72px; mask-image: radial-gradient(ellipse at center, black, transparent 75%); }
 .emoji-rain { position: absolute; inset: -18rem 0 0; z-index: -1; pointer-events: none; opacity: .68; }
+.emoji-rain::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(79,255,103,.14), transparent 66%); }
 .emoji-rain.is-paused .emoji-drop { animation-play-state: paused; }
-.emoji-drop { position: absolute; top: 0; left: calc((var(--column) + .5) * 2.94%); font-size: var(--size); opacity: 0; animation: fall var(--duration) linear var(--delay) infinite; transform: translateY(-10rem); }
+.emoji-drop { position: absolute; top: 0; left: var(--left); font-size: var(--size); opacity: 0; animation: fall var(--duration) linear var(--delay) infinite; transform: translateY(-10rem); }
 @keyframes fall { 0% { opacity: 0; transform: translateY(-10rem); } 8% { opacity: .8; } 75% { opacity: .55; } 100% { opacity: 0; transform: translateY(125svh); } }
 .scanlines { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .08; background: repeating-linear-gradient(0deg, transparent 0 3px, #9dffb0 4px, transparent 5px); mix-blend-mode: screen; }
 .hero { width: min(90%, 720px); min-height: 100svh; box-sizing: border-box; display: flex; position: relative; z-index: 2; flex-direction: column; align-items: flex-start; justify-content: center; margin: 0 auto; padding: 5rem 0 7rem; }
