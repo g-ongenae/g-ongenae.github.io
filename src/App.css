@@ -236,17 +236,19 @@ h1 span {
   /* Newest entry stays visible above the prompt; older ones fade off the top. */
   justify-content: flex-end;
   margin-bottom: 0.65rem;
+  /* The fade band lives in the padding, so it only ever bites into
+     overflow, never into the newest command line. */
+  padding-top: 1.5rem;
   overflow: hidden;
-  mask-image: linear-gradient(to bottom, transparent, black 14%, black 100%);
+  mask-image: linear-gradient(to bottom, transparent, black 1.5rem);
   transition: opacity 1.5s ease;
 }
 .terminal-history.history-fading {
   opacity: 0;
 }
+/* History lifetime is owned by the script (timing.historyLifetime). */
 .terminal-entry {
-  animation:
-    terminal-in 280ms ease-out,
-    terminal-out 1.4s ease 28.6s forwards;
+  animation: terminal-in 280ms ease-out;
 }
 .terminal-command {
   color: var(--green-bright);
@@ -288,8 +290,13 @@ h1 span {
   color: var(--green);
 }
 .terminal-form input {
-  width: 100%;
-  min-width: 0;
+  /* Sized to content (see syncInputWidth); field-sizing covers browsers
+     that support it before the script runs. */
+  width: 1ch;
+  min-width: 1ch;
+  max-width: 100%;
+  flex: 0 1 auto;
+  field-sizing: content;
   border: 0;
   outline: 0;
   padding: 0;
@@ -324,12 +331,6 @@ h1 span {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-@keyframes terminal-out {
-  to {
-    opacity: 0;
-    transform: translateY(-0.4rem);
   }
 }
 @keyframes line-in {
@@ -391,12 +392,6 @@ h1 span {
 
   .terminal-history {
     height: 10rem;
-  }
-
-  .terminal-entry {
-    animation:
-      terminal-in 280ms ease-out,
-      terminal-out 1.4s ease 5.6s forwards;
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -274,6 +274,18 @@ function setupTerminal() {
   let nextId = 0;
   let fadeTimer;
   let clearTimer;
+
+  // The input is only as wide as its text (monospace, so 1ch per character),
+  // which keeps the block cursor glued to the end of what was typed.
+  const syncInputWidth = () => {
+    terminalInput.style.width = `${Math.max(1, terminalInput.value.length)}ch`;
+  };
+  const setInputValue = (value) => {
+    terminalInput.value = value;
+    syncInputWidth();
+  };
+  terminalInput.addEventListener("input", syncInputWidth);
+  syncInputWidth();
   // Output lines still waiting to print; flushed in order on fast-forward.
   const pendingLines = new Map();
   // Sequencing steps (pauses, next-command scheduling); dropped on fast-forward.
@@ -378,7 +390,7 @@ function setupTerminal() {
       flushPendingLines();
       cancelHistoryFade();
       terminalHistory.replaceChildren();
-      terminalInput.value = "";
+      setInputValue("");
       return;
     }
 
@@ -391,7 +403,7 @@ function setupTerminal() {
       if (destination) window.open(destination.href, "_blank", "noreferrer");
     }
     cancelHistoryFade();
-    terminalInput.value = "";
+    setInputValue("");
 
     const entry = document.createElement("div");
     entry.className = "terminal-entry";
@@ -490,10 +502,10 @@ function setupTerminal() {
 
     currentlyTyping = command;
     let character = 0;
-    terminalInput.value = "";
+    setInputValue("");
     typingTimer = window.setInterval(() => {
       character += 1;
-      terminalInput.value = command.slice(0, character);
+      setInputValue(command.slice(0, character));
       if (character < command.length) return;
 
       window.clearInterval(typingTimer);
