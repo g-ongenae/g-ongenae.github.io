@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#030806" />
     <meta name="description" content="Guillaume Ongenae" />
     <title>Guillaume Ongenae</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -31,7 +31,22 @@
             rel="noreferrer"
           >
             <span>LinkedIn</span>
-            <span class="link-icon">↗</span>
+            <svg
+              class="link-icon"
+              aria-hidden="true"
+              viewBox="0 0 12 12"
+              width="12"
+              height="12"
+            >
+              <path
+                d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </a>
           <a
             class="link-card"
@@ -40,11 +55,32 @@
             rel="noreferrer"
           >
             <span>GitHub</span>
-            <span class="link-icon">↗</span>
+            <svg
+              class="link-icon"
+              aria-hidden="true"
+              viewBox="0 0 12 12"
+              width="12"
+              height="12"
+            >
+              <path
+                d="M2.5 9.5 9.5 2.5M4 2.5h5.5V8"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </a>
-          <a class="link-card" href="/blog" data-coming-soon="true">
+          <a
+            class="link-card is-coming-soon"
+            href="/blog"
+            data-coming-soon="true"
+            aria-disabled="true"
+            aria-label="Blog — coming soon"
+          >
             <span>Blog</span>
-            <span class="link-icon">↗</span>
+            <span class="link-tag">soon</span>
           </a>
         </nav>
       </section>

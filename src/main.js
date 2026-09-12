@@ -65,9 +65,7 @@ const findLink = (target) => {
   const name = target.replace(/^\.\//, "").replace(/\/$/, "").toLowerCase();
   return linkCards.find(
     (card) =>
-      (card.dataset.label ?? card.querySelector("span")?.textContent)
-        ?.trim()
-        .toLowerCase() === name,
+      card.querySelector("span")?.textContent.trim().toLowerCase() === name,
   );
 };
 const cdTarget = (command) => command.slice(2).trim();
@@ -529,30 +527,24 @@ function setupTerminal() {
     for (const command of queue) runCommand(command, { instant: true });
     queue.length = 0;
     finishIntro();
-    return;
+    return { runCommand };
   }
 
   document.addEventListener("keydown", fastForward);
   document.addEventListener("pointerdown", fastForward);
   scheduleStep(playNextCommand, timing.initialDelay);
+  return { runCommand };
 }
 
-function setupBlogLink() {
+// The blog card is marked "coming soon" in the markup; clicking it answers
+// through the terminal instead of navigating.
+function setupBlogLink(runCommand) {
   blogLink?.addEventListener("click", (event) => {
     event.preventDefault();
-    const label = blogLink.querySelector("span");
-    // Keep the original name so "cd blog" still resolves after the swap.
-    blogLink.dataset.label ??= label?.textContent.trim() ?? "";
-    label?.replaceChildren(document.createTextNode("Coming soon"));
-    blogLink
-      .querySelector(".link-icon")
-      ?.replaceChildren(document.createTextNode("✕"));
-    blogLink.classList.add("is-coming-soon");
-    blogLink.setAttribute("aria-label", "Blog — Coming soon");
+    runCommand("cd blog");
   });
 }
 
 setRandomFavicon();
 setupEmojiRain();
-setupTerminal();
-setupBlogLink();
+setupBlogLink(setupTerminal().runCommand);

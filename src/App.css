@@ -10,6 +10,18 @@
   --green-dim: #5bbf6d;
   --red: #ff6b6b;
   --black: #030806;
+  --fg: #f0fff2;
+  --fg-muted: #b2dcb8;
+  --line: rgba(157, 255, 176, 0.42);
+  --line-soft: rgba(157, 255, 176, 0.18);
+  /* Spacing scale (0.25rem grid). */
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
   /* One left edge shared by the hero, the terminal and the status bar:
      the hero column is centred (720px) on wide screens, 5vw on narrow ones. */
   --gutter: max(5vw, calc(50vw - 360px));
@@ -85,7 +97,7 @@
   align-items: flex-start;
   justify-content: center;
   margin: 0 0 0 var(--gutter);
-  padding: 3rem 0 2rem;
+  padding: var(--space-12) 0 var(--space-8);
 }
 /* Terminal and status bar share one row below the hero. Nothing is
    absolutely positioned, so the history can never paint over the links. */
@@ -96,26 +108,18 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1.5rem;
-  padding: 0 var(--gutter) 2.5rem;
+  gap: var(--space-6);
+  padding: 0 var(--gutter) var(--space-10);
 }
-.eyebrow,
 .intro,
 .status-bar,
 .link-card {
   font-family: var(--font-mono);
 }
-.eyebrow {
-  margin: 0 0 1.5rem;
-  color: var(--green-dim);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
 h1 {
   max-width: 100%;
   margin: 0;
-  color: #f0fff2;
+  color: var(--fg);
   font-family: var(--font-display);
   font-size: clamp(3.25rem, 10vw, 8rem);
   font-weight: 700;
@@ -127,14 +131,14 @@ h1 span {
   color: var(--green);
 }
 .intro {
-  margin: 2.1rem 0 3rem;
-  color: #b2dcb8;
+  margin: var(--space-6) 0 var(--space-10);
+  color: var(--fg-muted);
   font-size: var(--text-md);
 }
 .links {
   display: grid;
   width: min(100%, 560px);
-  gap: 0.7rem;
+  gap: var(--space-3);
 }
 /* Three items: a row on desktop, a stack on phones. */
 @media (min-width: 720px) {
@@ -146,8 +150,8 @@ h1 span {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.9rem 1.1rem;
-  border: 1px solid rgba(157, 255, 176, 0.42);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
   color: var(--green-bright);
   font-size: var(--text-sm);
   letter-spacing: 0.08em;
@@ -161,24 +165,33 @@ h1 span {
 .link-card:hover,
 .link-card:focus-visible {
   border-color: var(--green);
-  background: rgba(121, 255, 145, 0.13);
+  background: color-mix(in srgb, var(--green) 13%, transparent);
   outline: none;
   transform: translateY(-0.15rem);
 }
 .link-card.is-coming-soon,
 .link-card.is-coming-soon:hover,
 .link-card.is-coming-soon:focus-visible {
-  border-color: var(--red);
-  color: var(--red);
-  background: rgba(255, 107, 107, 0.12);
+  border-style: dashed;
+  border-color: var(--line);
+  color: var(--green-dim);
+  background: transparent;
   cursor: not-allowed;
-}
-.link-card.is-coming-soon .link-icon {
-  color: var(--red);
+  transform: none;
 }
 .link-icon {
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
   color: var(--green);
-  font-size: 1.2rem;
+}
+.link-tag {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid currentColor;
+  color: var(--red);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  line-height: 1.2;
 }
 .status-bar {
   flex: none;
@@ -208,7 +221,7 @@ h1 span {
   box-shadow: 0 0 9px var(--green);
 }
 .status-divider {
-  color: rgba(157, 255, 176, 0.35);
+  color: var(--line);
 }
 .command-hidden {
   opacity: 0;
@@ -224,7 +237,6 @@ h1 span {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   line-height: 1.6;
-  text-shadow: 0 0 10px rgba(157, 255, 176, 0.28);
 }
 .terminal-history {
   display: flex;
@@ -232,15 +244,15 @@ h1 span {
      output prints. Newest entries stay at the bottom. */
   height: min(26vh, 14rem);
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
   /* Newest entry stays visible above the prompt; older ones fade off the top. */
   justify-content: flex-end;
-  margin-bottom: 0.65rem;
+  margin-bottom: var(--space-3);
   /* The fade band lives in the padding, so it only ever bites into
      overflow, never into the newest command line. */
-  padding-top: 1.5rem;
+  padding-top: var(--space-6);
   overflow: hidden;
-  mask-image: linear-gradient(to bottom, transparent, black 1.5rem);
+  mask-image: linear-gradient(to bottom, transparent, black var(--space-6));
   transition: opacity 1.5s ease;
 }
 .terminal-history.history-fading {
@@ -250,11 +262,13 @@ h1 span {
 .terminal-entry {
   animation: terminal-in 280ms ease-out;
 }
+/* A faint phosphor glow on the prompt lines only; output stays crisp. */
 .terminal-command {
   color: var(--green-bright);
+  text-shadow: 0 0 4px rgba(157, 255, 176, 0.35);
 }
 .terminal-output {
-  padding-left: 1.15rem;
+  padding-left: 1.25rem;
   color: var(--green-dim);
 }
 .terminal-line {
@@ -282,12 +296,13 @@ h1 span {
   min-width: 0;
   align-items: center;
   min-height: 1.5rem;
-  border-top: 1px solid rgba(157, 255, 176, 0.18);
-  padding-top: 0.45rem;
+  border-top: 1px solid var(--line-soft);
+  padding-top: var(--space-2);
 }
 .prompt {
-  margin-right: 0.5rem;
+  margin-right: var(--space-2);
   color: var(--green);
+  text-shadow: 0 0 4px rgba(157, 255, 176, 0.35);
 }
 .terminal-form input {
   /* Sized to content (see syncInputWidth); field-sizing covers browsers
@@ -361,29 +376,21 @@ h1 span {
   }
 }
 @media (max-width: 560px) {
-  .landing-page {
-    min-height: 100svh;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
   .hero {
     /* Keep the identity block close to the top on short phone viewports. */
     justify-content: flex-start;
-    padding: clamp(1.25rem, 4vh, 2.5rem) 0 1.5rem;
+    padding: clamp(var(--space-4), 4vh, var(--space-10)) 0 var(--space-6);
   }
 
   .intro {
-    margin: 1.35rem 0 2rem;
+    margin: var(--space-4) 0 var(--space-8);
     font-size: var(--text-sm);
-    letter-spacing: -0.04em;
   }
 
   .bottom-bar {
     flex-direction: column;
     align-items: stretch;
-    gap: 1.5rem;
-    padding-bottom: 1.5rem;
+    padding-bottom: var(--space-6);
   }
 
   .terminal {
