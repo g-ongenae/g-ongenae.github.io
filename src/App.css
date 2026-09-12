@@ -29,9 +29,9 @@ h1 span { display: block; color: var(--green); }
 .terminal-command { color: var(--green-bright); }
 .terminal-output { padding-left: 1.15rem; color: var(--green-dim); }
 .terminal-line { animation: line-in 300ms ease-out both; }
-.terminal-form { display: flex; align-items: center; min-height: 1.5rem; border-top: 1px solid rgba(157,255,176,.18); padding-top: .45rem; }
+.terminal-form { display: flex; min-width: 0; align-items: center; min-height: 1.5rem; border-top: 1px solid rgba(157,255,176,.18); padding-top: .45rem; }
 .prompt { margin-right: .5rem; color: var(--green); }
-.terminal-form input { width: 100%; border: 0; outline: 0; padding: 0; color: var(--green-bright); background: transparent; font: inherit; caret-color: transparent; }
+.terminal-form input { width: 100%; min-width: 0; border: 0; outline: 0; padding: 0; color: var(--green-bright); background: transparent; font: inherit; caret-color: transparent; }
 .cursor { width: .52rem; height: 1em; margin-left: .12rem; background: var(--green); animation: blink 1s steps(1) infinite; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @keyframes terminal-in { from { opacity: 0; transform: translateY(.35rem); } to { opacity: 1; transform: translateY(0); } }
@@ -39,6 +39,51 @@ h1 span { display: block; color: var(--green); }
 @keyframes line-in { from { opacity: 0; transform: translateX(-.25rem); } to { opacity: 1; transform: translateX(0); } }
 @keyframes content-in { from { opacity: 0; filter: blur(5px); transform: translateY(.8rem); } to { opacity: 1; filter: blur(0); transform: translateY(0); } }
 @keyframes blink { 50% { opacity: 0; } }
-@media (max-width: 560px) { .hero { padding-bottom: 8rem; } .status-bar { right: auto; left: 5%; } }
-@media (max-width: 560px) { .terminal { bottom: 5.7rem; } }
+@media (max-width: 560px) {
+  .landing-page {
+    min-height: 100svh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .hero {
+    min-height: auto;
+    max-width: 100%;
+    /* Keep the identity block close to the top on short phone viewports. */
+    padding: clamp(1.25rem, 4vh, 2.5rem) 0 1.5rem;
+  }
+
+  h1 {
+    font-size: clamp(3.25rem, 12vw, 5.5rem);
+  }
+
+  .intro {
+    margin: 1.35rem 0 2rem;
+    font-size: .78rem;
+    letter-spacing: -.04em;
+  }
+
+  .status-bar {
+    right: auto;
+    left: 5%;
+  }
+
+  /* Keep command history below the hero so it cannot paint over the links. */
+  .terminal {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    display: flex;
+    min-height: 30vh;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 90%;
+    max-width: 100%;
+    margin: 0 auto 5.7rem;
+  }
+
+  .terminal-entry {
+    animation: terminal-in 280ms ease-out, terminal-out 1.4s ease 5.6s forwards;
+  }
+}
 @media (prefers-reduced-motion: reduce) { .emoji-rain { opacity: .22; } .emoji-drop { animation: none; opacity: .5; } .link-card { transition: none; } .terminal-entry, .terminal-line, .cursor, .command-revealed { animation: none; } }

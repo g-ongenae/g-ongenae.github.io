@@ -73,7 +73,7 @@ function Terminal({ onCommand }) {
             fadeTimerRef.current = window.setTimeout(() => {
               setHistoryFading(true);
               clearTimerRef.current = window.setTimeout(() => setHistory([]), 1500);
-            }, 30000);
+            }, window.matchMedia("(max-width: 560px)").matches ? 7000 : 30000);
           }
         }, index * (command === "ps -aux" ? 380 : 260));
       });
