@@ -8,12 +8,80 @@
     <title>Guillaume Ongenae</title>
   </head>
   <body>
-    <noscript>
-      You need to enable JavaScript to run this app.
-      <hr />
-      But this website only displays my name and face.
-    </noscript>
-    <div id="root"></div>
-    <script type="module" src="/src/index.jsx"></script>
+    <main class="landing-page">
+      <div class="emoji-rain" aria-hidden="true">
+        <video
+          class="emoji-rain-video"
+          autoplay
+          loop
+          muted
+          playsinline
+          disablepictureinpicture
+          preload="auto"
+        >
+          <source
+            src="/emoji-rain-portrait.webm"
+            type="video/webm"
+            media="(orientation: portrait)"
+          />
+          <source src="/emoji-rain-landscape.webm" type="video/webm" />
+        </video>
+      </div>
+      <div class="scanlines" aria-hidden="true"></div>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title" class="command-hidden">
+          Guillaume<span>Ongenae</span>
+        </h1>
+        <p class="intro command-hidden">Fastening. Vibing. Telling.</p>
+        <nav class="links command-hidden" aria-label="Personal links">
+          <a
+            class="link-card"
+            href="https://www.linkedin.com/in/guillaumeongenae/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>LinkedIn</span>
+            <span class="link-icon">↗</span>
+          </a>
+          <a
+            class="link-card"
+            href="https://github.com/g-ongenae"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>GitHub</span>
+            <span class="link-icon">↗</span>
+          </a>
+          <a class="link-card" href="/blog">
+            <span>Blog</span>
+            <span class="link-icon">↗</span>
+          </a>
+        </nav>
+      </section>
+
+      <footer class="status-bar command-hidden">
+        <span class="status-dot"></span>
+        <span>online</span>
+        <span class="status-divider">|</span>
+        <span>Paris, FR</span>
+      </footer>
+
+      <section class="terminal" aria-label="Command history">
+        <div class="terminal-history" aria-live="polite"></div>
+        <form class="terminal-form">
+          <label class="sr-only" for="terminal-input">Enter a command</label>
+          <span class="prompt" aria-hidden="true">$</span>
+          <input
+            id="terminal-input"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Terminal command input"
+          />
+          <span class="cursor" aria-hidden="true"></span>
+        </form>
+      </section>
+    </main>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

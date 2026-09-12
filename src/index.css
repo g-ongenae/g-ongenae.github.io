@@ -2,8 +2,7 @@
   box-sizing: border-box;
 }
 html,
-body,
-#root {
+body {
   min-height: 100%;
   width: 100%;
 }
