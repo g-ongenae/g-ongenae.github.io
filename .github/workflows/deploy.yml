@@ -38,7 +38,7 @@ jobs:
         run: |
           mv build "$RUNNER_TEMP/site"
           git switch --orphan gh-pages-deploy
-          git rm -rf .
+          git clean -fdx
           cp -R "$RUNNER_TEMP/site/." .
           touch .nojekyll
           git config user.name "github-actions[bot]"
