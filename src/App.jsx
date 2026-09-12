@@ -5,7 +5,11 @@ const emojis = ["🎷", "🎸", "🥁", "🧘‍♂️", "🕺", "🏃‍♂️"
 const emojiDropCount = 18;
 
 const links = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/guillaumeongenae/", icon: "↗" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/guillaumeongenae/",
+    icon: "↗",
+  },
   { label: "GitHub", href: "https://github.com/g-ongenae", icon: "↗" },
   { label: "Blog", href: "/blog", icon: "↗" },
 ];
@@ -27,18 +31,28 @@ function EmojiRain() {
   useEffect(() => {
     const handleVisibilityChange = () => setPageHidden(document.hidden);
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
 
   return (
-    <div className={`emoji-rain${pageHidden ? " is-paused" : ""}`} aria-hidden="true">
+    <div
+      className={`emoji-rain${pageHidden ? " is-paused" : ""}`}
+      aria-hidden="true"
+    >
       {Array.from({ length: emojiDropCount }, (_, index) => (
-        <span className="emoji-drop" key={index} style={{
-          "--left": `${((index + 0.5) / emojiDropCount) * 100}%`,
-          "--delay": `${(index * 0.37) % 8}s`,
-          "--duration": `${7 + ((index * 1.13) % 7)}s`,
-          "--size": `${1.05 + ((index * 0.17) % 0.75)}rem`,
-        }}>{emojis[index % emojis.length]}</span>
+        <span
+          className="emoji-drop"
+          key={index}
+          style={{
+            "--left": `${((index + 0.5) / emojiDropCount) * 100}%`,
+            "--delay": `${(index * 0.37) % 8}s`,
+            "--duration": `${7 + ((index * 1.13) % 7)}s`,
+            "--size": `${1.05 + ((index * 0.17) % 0.75)}rem`,
+          }}
+        >
+          {emojis[index % emojis.length]}
+        </span>
       ))}
     </div>
   );
@@ -71,22 +85,40 @@ function Terminal({ onCommand }) {
     setHistory((current) => [...current, { id, command, output: [] }]);
     setInput("");
 
-    window.setTimeout(() => {
-      output.forEach((line, index) => {
-        window.setTimeout(() => {
-          setHistory((current) => current.map((entry) =>
-            entry.id === id ? { ...entry, output: [...entry.output, line] } : entry
-          ));
-          if (index === output.length - 1) {
-            runningRef.current = false;
-            fadeTimerRef.current = window.setTimeout(() => {
-              setHistoryFading(true);
-              clearTimerRef.current = window.setTimeout(() => setHistory([]), 1500);
-            }, window.matchMedia("(max-width: 560px)").matches ? 7000 : 30000);
-          }
-        }, index * (command === "ps -aux" ? 380 : 260));
-      });
-    }, command === "ps -aux" ? 360 : 240);
+    window.setTimeout(
+      () => {
+        output.forEach((line, index) => {
+          window.setTimeout(
+            () => {
+              setHistory((current) =>
+                current.map((entry) =>
+                  entry.id === id
+                    ? { ...entry, output: [...entry.output, line] }
+                    : entry,
+                ),
+              );
+              if (index === output.length - 1) {
+                runningRef.current = false;
+                fadeTimerRef.current = window.setTimeout(
+                  () => {
+                    setHistoryFading(true);
+                    clearTimerRef.current = window.setTimeout(
+                      () => setHistory([]),
+                      1500,
+                    );
+                  },
+                  window.matchMedia("(max-width: 560px)").matches
+                    ? 7000
+                    : 30000,
+                );
+              }
+            },
+            index * (command === "ps -aux" ? 380 : 260),
+          );
+        });
+      },
+      command === "ps -aux" ? 360 : 240,
+    );
   }, []);
 
   useEffect(() => {
@@ -138,21 +170,32 @@ function Terminal({ onCommand }) {
 
   return (
     <section className="terminal" aria-label="Command history">
-      <div className={`terminal-history ${historyFading ? "history-fading" : ""}`} aria-live="polite">
+      <div
+        className={`terminal-history ${historyFading ? "history-fading" : ""}`}
+        aria-live="polite"
+      >
         {history.map((entry) => (
           <div className="terminal-entry" key={entry.id}>
-            <div className="terminal-command"><span className="prompt">$</span> {entry.command}</div>
+            <div className="terminal-command">
+              <span className="prompt">$</span> {entry.command}
+            </div>
             <div className="terminal-output">
               {entry.output.map((line, index) => (
-                <div className="terminal-line" key={`${entry.id}-${index}`}>{line}</div>
+                <div className="terminal-line" key={`${entry.id}-${index}`}>
+                  {line}
+                </div>
               ))}
             </div>
           </div>
         ))}
       </div>
       <form className="terminal-form" onSubmit={handleSubmit}>
-        <label className="sr-only" htmlFor="terminal-input">Enter a command</label>
-        <span className="prompt" aria-hidden="true">$</span>
+        <label className="sr-only" htmlFor="terminal-input">
+          Enter a command
+        </label>
+        <span className="prompt" aria-hidden="true">
+          $
+        </span>
         <input
           ref={inputRef}
           id="terminal-input"
@@ -172,7 +215,9 @@ function App() {
   const [revealedCommands, setRevealedCommands] = useState([]);
 
   const revealCommand = (command) => {
-    setRevealedCommands((current) => current.includes(command) ? current : [...current, command]);
+    setRevealedCommands((current) =>
+      current.includes(command) ? current : [...current, command],
+    );
   };
 
   return (
@@ -180,18 +225,48 @@ function App() {
       <EmojiRain />
       <div className="scanlines" aria-hidden="true" />
       <section className="hero" aria-labelledby="hero-title">
-        <h1 id="hero-title" className={revealedCommands.includes("whoami") ? "command-revealed" : "command-hidden"}>Guillaume<span>Ongenae</span></h1>
-        <p className={`intro ${revealedCommands.includes("ps -aux") ? "command-revealed" : "command-hidden"}`}>Fastening. Vibing. Telling.</p>
-        <nav className={`links ${revealedCommands.includes("ls -la") ? "command-revealed" : "command-hidden"}`} aria-label="Personal links">
+        <h1
+          id="hero-title"
+          className={
+            revealedCommands.includes("whoami")
+              ? "command-revealed"
+              : "command-hidden"
+          }
+        >
+          Guillaume<span>Ongenae</span>
+        </h1>
+        <p
+          className={`intro ${revealedCommands.includes("ps -aux") ? "command-revealed" : "command-hidden"}`}
+        >
+          Fastening. Vibing. Telling.
+        </p>
+        <nav
+          className={`links ${revealedCommands.includes("ls -la") ? "command-revealed" : "command-hidden"}`}
+          aria-label="Personal links"
+        >
           {links.map((link) => (
-            <a className="link-card" href={link.href} key={link.label}
-              {...(link.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}>
-              <span>{link.label}</span><span className="link-icon">{link.icon}</span>
+            <a
+              className="link-card"
+              href={link.href}
+              key={link.label}
+              {...(link.href.startsWith("http")
+                ? { target: "_blank", rel: "noreferrer" }
+                : {})}
+            >
+              <span>{link.label}</span>
+              <span className="link-icon">{link.icon}</span>
             </a>
           ))}
         </nav>
       </section>
-      <footer className={`status-bar ${revealedCommands.includes("cwd") ? "command-revealed" : "command-hidden"}`}><span className="status-dot" /><span>online</span><span className="status-divider">|</span><span>Paris, FR</span></footer>
+      <footer
+        className={`status-bar ${revealedCommands.includes("cwd") ? "command-revealed" : "command-hidden"}`}
+      >
+        <span className="status-dot" />
+        <span>online</span>
+        <span className="status-divider">|</span>
+        <span>Paris, FR</span>
+      </footer>
       <Terminal onCommand={revealCommand} />
     </main>
   );

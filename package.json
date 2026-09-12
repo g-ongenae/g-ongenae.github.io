@@ -17,7 +17,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "format": "npx prettier --write --ignore-unknown *"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",

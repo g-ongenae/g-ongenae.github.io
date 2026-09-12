@@ -1,4 +1,19 @@
-* { box-sizing: border-box; }
-html, body, #root { min-height: 100%; width: 100%; }
-html, body { overflow-x: hidden; }
-body { margin: 0; background: #030806; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  min-height: 100%;
+  width: 100%;
+}
+html,
+body {
+  overflow-x: hidden;
+}
+body {
+  margin: 0;
+  background: #030806;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
