@@ -64,7 +64,9 @@ const findLink = (target) => {
   const name = target.replace(/^\.\//, "").replace(/\/$/, "").toLowerCase();
   return linkCards.find(
     (card) =>
-      card.querySelector("span")?.textContent.trim().toLowerCase() === name,
+      (card.dataset.label ?? card.querySelector("span")?.textContent)
+        ?.trim()
+        .toLowerCase() === name,
   );
 };
 const cdTarget = (command) => command.slice(2).trim();
@@ -510,9 +512,14 @@ function setupTerminal() {
 function setupBlogLink() {
   blogLink?.addEventListener("click", (event) => {
     event.preventDefault();
+    const label = blogLink.querySelector("span");
+    // Keep the original name so "cd blog" still resolves after the swap.
+    blogLink.dataset.label ??= label?.textContent.trim() ?? "";
+    label?.replaceChildren(document.createTextNode("Coming soon"));
     blogLink
-      .querySelector("span")
-      ?.replaceChildren(document.createTextNode("Coming soon"));
+      .querySelector(".link-icon")
+      ?.replaceChildren(document.createTextNode("✕"));
+    blogLink.classList.add("is-coming-soon");
     blogLink.setAttribute("aria-label", "Blog — Coming soon");
   });
 }

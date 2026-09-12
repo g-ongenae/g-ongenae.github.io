@@ -4,6 +4,7 @@
   --green: #9dffb0;
   --green-bright: #d7ffdd;
   --green-dim: #5bbf6d;
+  --red: #ff6b6b;
   --black: #030806;
 }
 .landing-page {
@@ -137,6 +138,17 @@ h1 span {
   background: rgba(121, 255, 145, 0.13);
   outline: none;
   transform: translateX(0.4rem);
+}
+.link-card.is-coming-soon,
+.link-card.is-coming-soon:hover,
+.link-card.is-coming-soon:focus-visible {
+  border-color: var(--red);
+  color: var(--red);
+  background: rgba(255, 107, 107, 0.12);
+  cursor: not-allowed;
+}
+.link-card.is-coming-soon .link-icon {
+  color: var(--red);
 }
 .link-icon {
   color: var(--green);
