@@ -5,6 +5,8 @@ const commands = ["whoami", "cwd", "ps -aux", "ls -la"];
 const processWords = ["Fastening.", "Vibing.", "Telling."];
 const links = ["LinkedIn", "GitHub", "Blog"];
 const faviconEmojis = ["🎷", "🎸", "🥁", "🧘‍♂️", "🕺", "🏃‍♂️", "✍️", "👨‍💻"];
+const emojiDropCount = 34;
+const rainFps = 20;
 
 const terminalHistory = document.querySelector(".terminal-history");
 const terminalForm = document.querySelector(".terminal-form");
@@ -43,19 +45,87 @@ function setRandomFavicon() {
 }
 
 function setupEmojiRain() {
-  const video = document.querySelector(".emoji-rain-video");
+  const rain = document.querySelector(".emoji-rain");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const syncPlayback = () => {
-    if (document.hidden || reducedMotion.matches) {
-      video.pause();
-    } else {
-      video.play().catch(() => {});
+  const frameInterval = 1000 / rainFps;
+  const drops = Array.from({ length: emojiDropCount }, (_, index) => {
+    const element = document.createElement("span");
+    element.className = "emoji-drop";
+    element.textContent = faviconEmojis[index % faviconEmojis.length];
+    element.style.left = `${((index + 0.5) / emojiDropCount) * 100}%`;
+    element.style.fontSize = `${1.05 + ((index * 0.17) % 0.75)}rem`;
+    rain.append(element);
+
+    return {
+      element,
+      delay: ((index * 0.37) % 8) * 1000,
+      duration: (7 + ((index * 1.13) % 7)) * 1000,
+    };
+  });
+
+  let animationFrame;
+  let previousFrame = 0;
+  let runningSince = 0;
+  let elapsedBeforePause = 0;
+  let endY = window.innerHeight * 1.25;
+  const startY = -160;
+
+  const updateDrops = (elapsed) => {
+    for (const drop of drops) {
+      const dropElapsed = elapsed - drop.delay;
+      if (dropElapsed < 0) {
+        drop.element.style.opacity = "0";
+        continue;
+      }
+
+      const progress = (dropElapsed % drop.duration) / drop.duration;
+      const opacity =
+        progress < 0.08
+          ? (progress / 0.08) * 0.8
+          : progress < 0.75
+            ? 0.8 - ((progress - 0.08) / 0.67) * 0.25
+            : 0.55 * (1 - (progress - 0.75) / 0.25);
+      const y = startY + (endY - startY) * progress;
+
+      drop.element.style.transform = `translate3d(0, ${y}px, 0)`;
+      drop.element.style.opacity = opacity.toFixed(3);
     }
   };
 
-  document.addEventListener("visibilitychange", syncPlayback);
-  reducedMotion.addEventListener("change", syncPlayback);
-  syncPlayback();
+  const animate = (time) => {
+    const sincePreviousFrame = time - previousFrame;
+    if (sincePreviousFrame >= frameInterval) {
+      previousFrame = time - (sincePreviousFrame % frameInterval);
+      updateDrops(elapsedBeforePause + time - runningSince);
+    }
+    animationFrame = window.requestAnimationFrame(animate);
+  };
+
+  const start = () => {
+    if (animationFrame !== undefined) return;
+    previousFrame = 0;
+    runningSince = performance.now();
+    animationFrame = window.requestAnimationFrame(animate);
+  };
+
+  const stop = () => {
+    if (animationFrame === undefined) return;
+    elapsedBeforePause += performance.now() - runningSince;
+    window.cancelAnimationFrame(animationFrame);
+    animationFrame = undefined;
+  };
+
+  const syncAnimation = () => {
+    if (document.hidden || reducedMotion.matches) stop();
+    else start();
+  };
+
+  window.addEventListener("resize", () => {
+    endY = window.innerHeight * 1.25;
+  });
+  document.addEventListener("visibilitychange", syncAnimation);
+  reducedMotion.addEventListener("change", syncAnimation);
+  syncAnimation();
 }
 
 function revealCommand(command) {

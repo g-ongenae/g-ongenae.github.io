@@ -28,9 +28,11 @@
 }
 .emoji-rain {
   position: absolute;
-  inset: 0;
+  inset: -18rem 0 0;
   z-index: -1;
   pointer-events: none;
+  contain: layout paint style;
+  opacity: 0.68;
 }
 .emoji-rain::before {
   content: "";
@@ -42,11 +44,12 @@
     transparent 66%
   );
 }
-.emoji-rain-video {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.emoji-drop {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  transform: translate3d(0, -10rem, 0);
+  will-change: transform, opacity;
 }
 .scanlines {
   position: absolute;
@@ -346,7 +349,7 @@ h1 span {
   .emoji-rain {
     opacity: 0.22;
   }
-  .emoji-rain-video {
+  .emoji-drop {
     display: none;
   }
   .link-card {
