@@ -1,6 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
-
 :root {
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+  /* Type scale: status bar / terminal + cards / intro line. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 1rem;
   --green: #9dffb0;
   --green-bright: #d7ffdd;
   --green-dim: #5bbf6d;
@@ -99,7 +103,7 @@
 .intro,
 .status-bar,
 .link-card {
-  font-family: "Space Mono", monospace;
+  font-family: var(--font-mono);
 }
 .eyebrow {
   margin: 0 0 1.5rem;
@@ -112,11 +116,11 @@ h1 {
   max-width: 100%;
   margin: 0;
   color: #f0fff2;
-  font-family: Arial, sans-serif;
-  font-size: clamp(4rem, 14vw, 9.5rem);
+  font-family: var(--font-display);
+  font-size: clamp(3.25rem, 10vw, 8rem);
   font-weight: 700;
-  letter-spacing: -0.085em;
-  line-height: 0.82;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
 }
 h1 span {
   display: block;
@@ -125,7 +129,7 @@ h1 span {
 .intro {
   margin: 2.1rem 0 3rem;
   color: #b2dcb8;
-  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  font-size: var(--text-md);
 }
 .links {
   display: grid;
@@ -145,7 +149,7 @@ h1 span {
   padding: 0.9rem 1.1rem;
   border: 1px solid rgba(157, 255, 176, 0.42);
   color: var(--green-bright);
-  font-size: 0.83rem;
+  font-size: var(--text-sm);
   letter-spacing: 0.08em;
   text-decoration: none;
   text-transform: uppercase;
@@ -182,7 +186,7 @@ h1 span {
   align-items: center;
   gap: 0.65rem;
   color: var(--green-dim);
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -217,9 +221,9 @@ h1 span {
   flex: 0 1 360px;
   min-width: 0;
   color: var(--green);
-  font-family: "Space Mono", monospace;
-  font-size: 0.68rem;
-  line-height: 1.55;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
   text-shadow: 0 0 10px rgba(157, 255, 176, 0.28);
 }
 .terminal-history {
@@ -368,13 +372,9 @@ h1 span {
     padding: clamp(1.25rem, 4vh, 2.5rem) 0 1.5rem;
   }
 
-  h1 {
-    font-size: clamp(3.25rem, 12vw, 5.5rem);
-  }
-
   .intro {
     margin: 1.35rem 0 2rem;
-    font-size: 0.78rem;
+    font-size: var(--text-sm);
     letter-spacing: -0.04em;
   }
 
