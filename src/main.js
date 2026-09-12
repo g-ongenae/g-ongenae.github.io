@@ -307,7 +307,18 @@ function setupTerminal() {
 
   const runCommand = (rawCommand, { instant = false } = {}) => {
     const command = normalizeCommand(rawCommand);
-    if (!command) return;
+
+    if (!command) {
+      // Enter on an empty line echoes a bare prompt, like a real shell.
+      const entry = document.createElement("div");
+      entry.className = "terminal-entry";
+      entry.dataset.id = nextId++;
+      entry.innerHTML =
+        '<div class="terminal-command"><span class="prompt">$</span></div>';
+      terminalHistory.append(entry);
+      scheduleHistoryFade();
+      return;
+    }
 
     if (command === "clear") {
       flushPendingLines();
