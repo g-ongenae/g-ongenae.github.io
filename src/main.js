@@ -1,4 +1,3 @@
-import { createTerminal } from "./terminal.js";
 import "./index.css";
 import "./App.css";
 
@@ -55,6 +54,10 @@ const faviconEmojis = ["🎷", "🎸", "🥁", "🧘‍♂️", "🕺", "🏃‍
 const emojiDropCount = 34;
 const rainFps = 20;
 
+const terminalHistory = document.querySelector(".terminal-history");
+const terminalForm = document.querySelector(".terminal-form");
+const terminalInput = document.querySelector("#terminal-input");
+const blogLink = document.querySelector('[data-coming-soon="true"]');
 const linkCards = [...document.querySelectorAll(".link-card")];
 
 const externalCdLinks = {
@@ -69,14 +72,12 @@ const externalCdLinks = {
   twitch: "https://www.twitch.tv/gongenae",
 };
 
-const normalizeCdTarget = (target) =>
-  target.replace(/^\.\//, "").replace(/\/$/, "").toLowerCase();
-const externalCdDestination = (target) =>
-  externalCdLinks[normalizeCdTarget(target)];
-
 // "cd github", "cd GitHub/", "cd ./blog" all resolve to the matching card.
 const findLink = (target) => {
-  const name = normalizeCdTarget(target);
+  const name = target.replace(/^\.\//, "").replace(/\/$/, "").toLowerCase();
+  if (Object.hasOwn(externalCdLinks, name)) {
+    return { href: externalCdLinks[name], dataset: {} };
+  }
   return linkCards.find(
     (card) =>
       card.querySelector("span")?.textContent.trim().toLowerCase() === name,
@@ -87,8 +88,6 @@ const isCd = (command) => /^cd(\s|$)/.test(command);
 // A cd that actually opens a page (not the blog, not "cd" alone).
 const cdDestination = (command) => {
   if (!isCd(command)) return undefined;
-  const externalDestination = externalCdDestination(cdTarget(command));
-  if (externalDestination) return { href: externalDestination };
   const link = findLink(cdTarget(command));
   return link && !link.dataset.comingSoon ? link : undefined;
 };
@@ -101,10 +100,29 @@ const contentByCommand = {
 };
 contentByCommand["ps -laux"] = contentByCommand["ps -aux"];
 
+const collapseCommand = (command) =>
+  command
+    .trim()
+    .replace(/^\$\s*/, "")
+    .replace(/\s+/g, " ");
+
+// "pwd & ssh", "pwd && ssh" and "pwd; ssh" all run both, in order.
+const splitCommands = (command) =>
+  collapseCommand(command)
+    .split(/\s*(?:&&|&|;)\s*/)
+    .map(normalizeCommand)
+    .filter(Boolean);
+
+// Accept the common spellings of each command (e.g. "ps aux" for "ps -aux").
+const normalizeCommand = (command) => {
+  const normalized = collapseCommand(command);
+  if (/^ps( -?(aux|xau|uax))?$/.test(normalized)) return "ps -aux";
+  if (/^ps -?(laux|alux|aulx)$/.test(normalized)) return "ps -laux";
+  if (/^ls( -(la|al|a|l))?$/.test(normalized)) return "ls -la";
+  return normalized;
+};
+
 const commandOutput = (command) => {
-  if (/^ps( -?(aux|xau|uax))?$/.test(command)) command = "ps -aux";
-  if (/^ps -?(laux|alux|aulx)$/.test(command)) command = "ps -laux";
-  if (/^ls( -(la|al|a|l))?$/.test(command)) command = "ls -la";
   if (command === "whoami") return ["Guillaume Ongenae"];
   if (command === "pwd") return ["Paris, FR"];
   if (/^ssh(\s|$)/.test(command)) return ["online"];
@@ -122,16 +140,6 @@ const commandOutput = (command) => {
   if (isCd(command)) {
     const target = cdTarget(command);
     if (!target || target === "~" || target === "/") return [];
-    const externalDestination = externalCdDestination(target);
-    if (externalDestination) {
-      const url = new URL(externalDestination);
-      return [
-        {
-          text: `${url.host}${url.pathname.replace(/\/$/, "")}`,
-          href: externalDestination,
-        },
-      ];
-    }
     const link = findLink(target);
     if (!link) return [`cd: no such file or directory: ${target}`];
     if (link.dataset.comingSoon) return ["fatal: coming soon"];
@@ -272,75 +280,286 @@ function writeIntroPlayed() {
 }
 
 function setupTerminal() {
-  const mount = document.querySelector(".terminal");
-  const terminal = createTerminal({
-    mount,
-    timing,
-    commands: (command) => {
-      revealCommand(command, { instant: true });
-      if (command === "ping")
-        window.location.assign(`mailto:${contactAddress()}`);
-      if (/^cd\s+(?:\.\/)?blog(?:\/|$)/i.test(command)) {
-        const target = cdTarget(command).replace(/^\.\//, "");
-        window.location.assign(new URL(`/${target}`, window.location.origin));
-        return [];
-      }
-      const destination = cdDestination(command);
-      if (destination) window.location.assign(destination.href);
-      return commandOutput(command);
-    },
-  });
-  // Intro sequencing belongs to the landing page, never to the shared shell.
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let timer, typingTimer, typingCommand;
-  const input = mount.querySelector("input");
-  const queue = [...commands];
-  const finish = () => {
-    clearTimeout(timer);
-    clearInterval(typingTimer);
-    input.value = "";
-    if (typingCommand) {
-      terminal.runCommand(typingCommand);
-      typingCommand = undefined;
-    }
-    for (const command of queue.splice(0)) terminal.runCommand(command);
-    writeIntroPlayed();
-    document.removeEventListener("pointerdown", finish);
-    document.removeEventListener("keydown", finish);
+  const isMobile = window.matchMedia("(max-width: 560px)");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const skipIntro = reducedMotion.matches || readIntroPlayed();
+
+  let nextId = 0;
+  let fadeTimer;
+  let clearTimer;
+
+  // The input is only as wide as its text (monospace, so 1ch per character),
+  // which keeps the block cursor glued to the end of what was typed.
+  const syncInputWidth = () => {
+    terminalInput.style.width = `${Math.max(1, terminalInput.value.length)}ch`;
   };
-  const next = () => {
-    if (document.hidden) return;
-    const command = queue.shift();
-    if (!command) {
-      finish();
+  const setInputValue = (value) => {
+    terminalInput.value = value;
+    syncInputWidth();
+  };
+  terminalInput.addEventListener("input", syncInputWidth);
+  syncInputWidth();
+  // Output lines still waiting to print; flushed in order on fast-forward.
+  const pendingLines = new Map();
+  // Sequencing steps (pauses, next-command scheduling); dropped on fast-forward.
+  const pendingSteps = new Set();
+
+  const scheduleLine = (fn, ms) => {
+    const id = window.setTimeout(() => {
+      pendingLines.delete(id);
+      fn();
+    }, ms);
+    pendingLines.set(id, fn);
+  };
+
+  const scheduleStep = (fn, ms) => {
+    const id = window.setTimeout(() => {
+      pendingSteps.delete(id);
+      fn();
+    }, ms);
+    pendingSteps.add(id);
+  };
+
+  const flushPendingLines = () => {
+    const lines = [...pendingLines];
+    pendingLines.clear();
+    for (const [id, fn] of lines) {
+      window.clearTimeout(id);
+      fn();
+    }
+  };
+
+  const cancelPendingSteps = () => {
+    for (const id of pendingSteps) window.clearTimeout(id);
+    pendingSteps.clear();
+  };
+
+  const cancelHistoryFade = () => {
+    window.clearTimeout(fadeTimer);
+    window.clearTimeout(clearTimer);
+    terminalHistory.classList.remove("history-fading");
+  };
+
+  const scheduleHistoryFade = () => {
+    cancelHistoryFade();
+    fadeTimer = window.setTimeout(
+      () => {
+        terminalHistory.classList.add("history-fading");
+        clearTimer = window.setTimeout(() => {
+          terminalHistory.replaceChildren();
+          terminalHistory.classList.remove("history-fading");
+        }, timing.historyFade);
+      },
+      isMobile.matches ? timing.historyLifetimeMobile : timing.historyLifetime,
+    );
+  };
+
+  // A line is plain text, { text, href } for a clickable link, or
+  // { name, text, width } for an aligned two-column row.
+  const appendLine = (outputElement, line) => {
+    const lineElement = document.createElement("div");
+    lineElement.className = "terminal-line";
+    if (typeof line === "string") {
+      lineElement.textContent = line;
+    } else if (line.href) {
+      const anchor = document.createElement("a");
+      anchor.href = line.href;
+      if (/^https?:/.test(line.href)) {
+        anchor.target = "_blank";
+        anchor.rel = "noreferrer";
+      }
+      anchor.textContent = line.text;
+      lineElement.append(anchor);
+    } else {
+      lineElement.classList.add("terminal-columns");
+      const nameElement = document.createElement("span");
+      nameElement.style.width = `${line.width}ch`;
+      nameElement.textContent = line.name;
+      const textElement = document.createElement("span");
+      textElement.textContent = `- ${line.text}`;
+      lineElement.append(nameElement, textElement);
+    }
+    outputElement.append(lineElement);
+  };
+
+  const runCommand = (rawCommand, { instant = false } = {}) => {
+    const parts = splitCommands(rawCommand);
+    // Single commands show their canonical spelling; chains show as typed.
+    const command = parts.length === 1 ? parts[0] : collapseCommand(rawCommand);
+
+    if (parts.length === 0) {
+      // Enter on an empty line echoes a bare prompt, like a real shell.
+      const entry = document.createElement("div");
+      entry.className = "terminal-entry";
+      entry.dataset.id = nextId++;
+      entry.innerHTML =
+        '<div class="terminal-command"><span class="prompt">$</span></div>';
+      terminalHistory.append(entry);
+      scheduleHistoryFade();
       return;
     }
-    typingCommand = command;
+
+    if (command === "clear") {
+      flushPendingLines();
+      cancelHistoryFade();
+      terminalHistory.replaceChildren();
+      setInputValue("");
+      return;
+    }
+
+    const output = parts.flatMap(commandOutput);
+    for (const part of parts) {
+      // Reveal on submit, not after the output finishes printing.
+      revealCommand(part, { instant });
+      if (part === "ping") window.location.assign(`mailto:${contactAddress()}`);
+      const destination = cdDestination(part);
+      if (destination) window.open(destination.href, "_blank", "noreferrer");
+    }
+    cancelHistoryFade();
+    setInputValue("");
+
+    const entry = document.createElement("div");
+    entry.className = "terminal-entry";
+    entry.dataset.id = nextId++;
+    const commandElement = document.createElement("div");
+    commandElement.className = "terminal-command";
+    commandElement.innerHTML = '<span class="prompt">$</span> ';
+    commandElement.append(document.createTextNode(command));
+    const outputElement = document.createElement("div");
+    outputElement.className = "terminal-output";
+    entry.append(commandElement, outputElement);
+    terminalHistory.append(entry);
+
+    if (instant || output.length === 0) {
+      output.forEach((line) => appendLine(outputElement, line));
+      scheduleHistoryFade();
+      return;
+    }
+
+    output.forEach((line, index) => {
+      scheduleLine(
+        () => {
+          appendLine(outputElement, line);
+          if (index === output.length - 1) scheduleHistoryFade();
+        },
+        timing.beforeOutput + index * timing.betweenLines,
+      );
+    });
+  };
+
+  terminalForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    runCommand(terminalInput.value);
+  });
+
+  // --- Focus: the input is the only field, so it should always be ready ---
+
+  const focusInput = () => {
+    if (document.activeElement === terminalInput) return;
+    terminalInput.focus({ preventScroll: true });
+  };
+  const isInteractive = (target) =>
+    target instanceof Element && target.closest("a, button, input");
+
+  focusInput();
+  window.addEventListener("focus", focusInput);
+  // Tapping anywhere that isn't a link brings the keyboard/caret back.
+  document.addEventListener("click", (event) => {
+    if (!isInteractive(event.target)) focusInput();
+  });
+  // Typing anywhere lands in the input; keys that navigate (Tab, Enter on a
+  // focused link, shortcuts with modifiers) are left alone.
+  document.addEventListener("keydown", (event) => {
+    if (event.target === terminalInput) return;
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (event.key.length !== 1 && event.key !== "Backspace") return;
+    focusInput();
+  });
+
+  // --- Scripted intro -------------------------------------------------------
+
+  const queue = [...commands];
+  let currentlyTyping;
+  let typingTimer;
+  let introDone = false;
+
+  const finishIntro = () => {
+    if (introDone) return;
+    introDone = true;
+    writeIntroPlayed();
+    document.removeEventListener("keydown", fastForward);
+    document.removeEventListener("pointerdown", fastForward);
+  };
+
+  // Any key or click skips straight to the finished state.
+  const fastForward = () => {
+    if (introDone) return;
+    window.clearInterval(typingTimer);
+    cancelPendingSteps();
+    flushPendingLines();
+    const remaining = currentlyTyping
+      ? [currentlyTyping, ...queue]
+      : [...queue];
+    currentlyTyping = undefined;
+    queue.length = 0;
+    for (const command of remaining) runCommand(command, { instant: true });
+    finishIntro();
+  };
+
+  const playNextCommand = () => {
+    const command = queue.shift();
+    if (!command) {
+      finishIntro();
+      return;
+    }
+
+    currentlyTyping = command;
     let character = 0;
-    typingTimer = setInterval(() => {
-      if (document.hidden) return;
-      input.value = command.slice(0, ++character);
+    setInputValue("");
+    typingTimer = window.setInterval(() => {
+      character += 1;
+      setInputValue(command.slice(0, character));
       if (character < command.length) return;
-      clearInterval(typingTimer);
-      input.value = "";
-      typingCommand = undefined;
-      terminal.runCommand(command);
-      timer = setTimeout(next, timing.beforeOutput + timing.betweenCommands);
+
+      window.clearInterval(typingTimer);
+      typingTimer = undefined;
+      scheduleStep(() => {
+        currentlyTyping = undefined;
+        runCommand(command);
+        // Overlap: start typing the next command as soon as this output
+        // begins printing, instead of waiting for it to finish.
+        scheduleStep(
+          playNextCommand,
+          timing.beforeOutput + timing.betweenCommands,
+        );
+      }, timing.afterTyping);
     }, timing.typing);
   };
-  if (reduced.matches || readIntroPlayed()) finish();
-  else {
-    document.addEventListener("pointerdown", finish);
-    document.addEventListener("keydown", finish);
-    timer = setTimeout(next, timing.initialDelay);
-    document.addEventListener("visibilitychange", () => {
-      clearTimeout(timer);
-      if (!document.hidden && queue.length && !typingCommand) next();
-    });
+
+  if (skipIntro) {
+    // Reduced motion or a repeat visit: everything on screen immediately,
+    // with the history already printed.
+    for (const command of queue) runCommand(command, { instant: true });
+    queue.length = 0;
+    finishIntro();
+    return { runCommand };
   }
-  return terminal;
+
+  document.addEventListener("keydown", fastForward);
+  document.addEventListener("pointerdown", fastForward);
+  scheduleStep(playNextCommand, timing.initialDelay);
+  return { runCommand };
+}
+
+// The blog card is marked "coming soon" in the markup; clicking it answers
+// through the terminal instead of navigating.
+function setupBlogLink(runCommand) {
+  blogLink?.addEventListener("click", (event) => {
+    event.preventDefault();
+    runCommand("cd blog");
+  });
 }
 
 setRandomFavicon();
 setupEmojiRain();
-setupTerminal();
+setupBlogLink(setupTerminal().runCommand);
