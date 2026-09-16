@@ -272,38 +272,49 @@ function writeIntroPlayed() {
 }
 
 function setupTerminal() {
-  const mount = document.querySelector('.terminal');
-  const terminal = createTerminal({ mount, timing, commands: command => {
-    revealCommand(command, { instant: true });
-    if (command === 'ping') window.location.assign(`mailto:${contactAddress()}`);
-    if (/^cd\s+(?:\.\/)?blog(?:\/|$)/i.test(command)) {
-      const target = cdTarget(command).replace(/^\.\//, '');
-      window.location.assign(new URL(`/${target}`, window.location.origin));
-      return [];
-    }
-    const destination = cdDestination(command);
-    if (destination) window.location.assign(destination.href);
-    return commandOutput(command);
-  }});
+  const mount = document.querySelector(".terminal");
+  const terminal = createTerminal({
+    mount,
+    timing,
+    commands: (command) => {
+      revealCommand(command, { instant: true });
+      if (command === "ping")
+        window.location.assign(`mailto:${contactAddress()}`);
+      if (/^cd\s+(?:\.\/)?blog(?:\/|$)/i.test(command)) {
+        const target = cdTarget(command).replace(/^\.\//, "");
+        window.location.assign(new URL(`/${target}`, window.location.origin));
+        return [];
+      }
+      const destination = cdDestination(command);
+      if (destination) window.location.assign(destination.href);
+      return commandOutput(command);
+    },
+  });
   // Intro sequencing belongs to the landing page, never to the shared shell.
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   let timer, typingTimer, typingCommand;
-  const input = mount.querySelector('input');
+  const input = mount.querySelector("input");
   const queue = [...commands];
   const finish = () => {
     clearTimeout(timer);
     clearInterval(typingTimer);
-    input.value = '';
-    if (typingCommand) { terminal.runCommand(typingCommand); typingCommand = undefined; }
+    input.value = "";
+    if (typingCommand) {
+      terminal.runCommand(typingCommand);
+      typingCommand = undefined;
+    }
     for (const command of queue.splice(0)) terminal.runCommand(command);
     writeIntroPlayed();
-    document.removeEventListener('pointerdown', finish);
-    document.removeEventListener('keydown', finish);
+    document.removeEventListener("pointerdown", finish);
+    document.removeEventListener("keydown", finish);
   };
   const next = () => {
     if (document.hidden) return;
     const command = queue.shift();
-    if (!command) { finish(); return; }
+    if (!command) {
+      finish();
+      return;
+    }
     typingCommand = command;
     let character = 0;
     typingTimer = setInterval(() => {
@@ -311,7 +322,7 @@ function setupTerminal() {
       input.value = command.slice(0, ++character);
       if (character < command.length) return;
       clearInterval(typingTimer);
-      input.value = '';
+      input.value = "";
       typingCommand = undefined;
       terminal.runCommand(command);
       timer = setTimeout(next, timing.beforeOutput + timing.betweenCommands);
@@ -319,10 +330,10 @@ function setupTerminal() {
   };
   if (reduced.matches || readIntroPlayed()) finish();
   else {
-    document.addEventListener('pointerdown', finish);
-    document.addEventListener('keydown', finish);
+    document.addEventListener("pointerdown", finish);
+    document.addEventListener("keydown", finish);
     timer = setTimeout(next, timing.initialDelay);
-    document.addEventListener('visibilitychange', () => {
+    document.addEventListener("visibilitychange", () => {
       clearTimeout(timer);
       if (!document.hidden && queue.length && !typingCommand) next();
     });

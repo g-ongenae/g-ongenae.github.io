@@ -14,6 +14,7 @@
     "preview": "vite preview --host 0.0.0.0",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
+    "prettier": "npx prettier --write * --ignore-unknown",
     "format": "npx prettier --write --ignore-unknown *"
   },
   "devDependencies": {
