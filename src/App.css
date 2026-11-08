@@ -8,7 +8,7 @@
   --green: #9dffb0;
   --green-bright: #d7ffdd;
   --green-dim: #5bbf6d;
-  --red: #ff6b6b;
+  --orange: #ffa657;
   --bg: #030806;
   --bg-glow: #0b2815;
   --fg: #f0fff2;
@@ -40,7 +40,7 @@
     --green: #055d20;
     --green-bright: #0e1116;
     --green-dim: #4b535d;
-    --red: #a0111f;
+    --orange: #702c00;
     --bg: #ffffff;
     --bg-glow: #eef1f4;
     --fg: #0e1116;
@@ -201,16 +201,6 @@ h1 span {
   outline: none;
   transform: translateY(-0.15rem);
 }
-.link-card.is-coming-soon,
-.link-card.is-coming-soon:hover,
-.link-card.is-coming-soon:focus-visible {
-  border-style: dashed;
-  border-color: var(--line);
-  color: var(--green-dim);
-  background: transparent;
-  cursor: not-allowed;
-  transform: none;
-}
 .link-icon {
   flex: none;
   width: 0.75rem;
@@ -220,7 +210,7 @@ h1 span {
 .link-tag {
   padding: 0.1rem 0.4rem;
   border: 1px solid currentColor;
-  color: var(--red);
+  color: var(--orange);
   font-size: var(--text-xs);
   letter-spacing: 0.1em;
   line-height: 1.2;

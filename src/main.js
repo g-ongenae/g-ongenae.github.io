@@ -57,7 +57,6 @@ const rainFps = 20;
 const terminalHistory = document.querySelector(".terminal-history");
 const terminalForm = document.querySelector(".terminal-form");
 const terminalInput = document.querySelector("#terminal-input");
-const blogLink = document.querySelector('[data-coming-soon="true"]');
 const linkCards = [...document.querySelectorAll(".link-card")];
 
 const externalCdLinks = {
@@ -76,7 +75,7 @@ const externalCdLinks = {
 const findLink = (target) => {
   const name = target.replace(/^\.\//, "").replace(/\/$/, "").toLowerCase();
   if (Object.hasOwn(externalCdLinks, name)) {
-    return { href: externalCdLinks[name], dataset: {} };
+    return { href: externalCdLinks[name] };
   }
   return linkCards.find(
     (card) =>
@@ -85,12 +84,9 @@ const findLink = (target) => {
 };
 const cdTarget = (command) => command.slice(2).trim();
 const isCd = (command) => /^cd(\s|$)/.test(command);
-// A cd that actually opens a page (not the blog, not "cd" alone).
-const cdDestination = (command) => {
-  if (!isCd(command)) return undefined;
-  const link = findLink(cdTarget(command));
-  return link && !link.dataset.comingSoon ? link : undefined;
-};
+// A cd that actually opens a page (not "cd" alone).
+const cdDestination = (command) =>
+  isCd(command) ? findLink(cdTarget(command)) : undefined;
 const contentByCommand = {
   whoami: document.querySelector("#hero-title"),
   "ps -aux": document.querySelector(".intro"),
@@ -142,7 +138,6 @@ const commandOutput = (command) => {
     if (!target || target === "~" || target === "/") return [];
     const link = findLink(target);
     if (!link) return [`cd: no such file or directory: ${target}`];
-    if (link.dataset.comingSoon) return ["fatal: coming soon"];
     const url = new URL(link.href);
     return [
       {
@@ -551,15 +546,6 @@ function setupTerminal() {
   return { runCommand };
 }
 
-// The blog card is marked "coming soon" in the markup; clicking it answers
-// through the terminal instead of navigating.
-function setupBlogLink(runCommand) {
-  blogLink?.addEventListener("click", (event) => {
-    event.preventDefault();
-    runCommand("cd blog");
-  });
-}
-
 setRandomFavicon();
 setupEmojiRain();
-setupBlogLink(setupTerminal().runCommand);
+setupTerminal();
