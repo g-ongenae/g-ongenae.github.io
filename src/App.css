@@ -9,12 +9,16 @@
   --green-bright: #d7ffdd;
   --green-dim: #5bbf6d;
   --red: #ff6b6b;
-  --black: #030806;
+  --bg: #030806;
+  --bg-glow: #0b2815;
   --fg: #f0fff2;
   --fg-muted: #b2dcb8;
   --line: rgba(157, 255, 176, 0.42);
   --line-soft: rgba(157, 255, 176, 0.18);
   --glow: 0 0 4px rgba(157, 255, 176, 0.35);
+  --grid-line: rgba(111, 255, 133, 0.2);
+  --rain-glow: rgba(79, 255, 103, 0.14);
+  --scanline-blend: screen;
   /* Spacing scale (0.25rem grid). */
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -26,6 +30,29 @@
   /* One left edge shared by the hero, the terminal and the status bar:
      the hero column is centred (720px) on wide screens, 5vw on narrow ones. */
   --gutter: max(5vw, calc(50vw - 360px));
+  color-scheme: dark;
+}
+/* High-contrast light (GitHub Light High Contrast palette), picked up from
+   the visitor's OS setting. Dark stays the default so browsers without the
+   media query keep the original look. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --green: #055d20;
+    --green-bright: #0e1116;
+    --green-dim: #4b535d;
+    --red: #a0111f;
+    --bg: #ffffff;
+    --bg-glow: #eef1f4;
+    --fg: #0e1116;
+    --fg-muted: #2f3742;
+    --line: rgba(14, 17, 22, 0.7);
+    --line-soft: rgba(14, 17, 22, 0.3);
+    --glow: none;
+    --grid-line: rgba(14, 17, 22, 0.14);
+    --rain-glow: rgba(5, 93, 32, 0.06);
+    --scanline-blend: multiply;
+    color-scheme: light;
+  }
 }
 .landing-page {
   display: grid;
@@ -35,7 +62,11 @@
   overflow: hidden;
   isolation: isolate;
   color: var(--green-bright);
-  background: radial-gradient(circle at 50% 42%, #0b2815 0%, var(--black) 58%);
+  background: radial-gradient(
+    circle at 50% 42%,
+    var(--bg-glow) 0%,
+    var(--bg) 58%
+  );
 }
 .landing-page::before {
   content: "";
@@ -44,8 +75,8 @@
   z-index: -1;
   opacity: 0.19;
   background-image:
-    linear-gradient(rgba(111, 255, 133, 0.2) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(111, 255, 133, 0.2) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: radial-gradient(ellipse at center, black, transparent 75%);
 }
@@ -63,7 +94,7 @@
   inset: 0;
   background: radial-gradient(
     ellipse at center,
-    rgba(79, 255, 103, 0.14),
+    var(--rain-glow),
     transparent 66%
   );
 }
@@ -86,7 +117,7 @@
     var(--green) 4px,
     transparent 5px
   );
-  mix-blend-mode: screen;
+  mix-blend-mode: var(--scanline-blend);
 }
 .hero {
   grid-row: 1;
