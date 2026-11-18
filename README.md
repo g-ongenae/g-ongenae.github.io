@@ -21,3 +21,7 @@ The deployable static files are written to `build/`. They can also be served by 
 ```sh
 python3 -m http.server 8000 --directory build --bind 0.0.0.0
 ```
+
+## License
+
+[MIT](LICENSE)
