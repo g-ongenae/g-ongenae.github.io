@@ -2,6 +2,7 @@
   "name": "g-ongenae.github.io",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "overrides": {
     "@babel/runtime": "^7.29.7",
     "braces": "^3.0.3",
